@@ -1,4 +1,4 @@
-export function buildParkSearchParams(query: string, limit = 20): URLSearchParams {
+export function buildNpsSearchParams(query: string, limit = 20): URLSearchParams {
   const q = query.trim()
   const params = new URLSearchParams()
   if (q) params.set('q', q)

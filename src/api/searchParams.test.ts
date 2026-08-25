@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { buildParkCodeParams, buildParkSearchParams } from './searchParams'
+import { buildParkCodeParams, buildNpsSearchParams } from '@/api/searchParams'
 
-describe('buildParkSearchParams', () => {
+describe('buildNpsSearchParams', () => {
   it('trims the query and sets a limit', () => {
-    const params = buildParkSearchParams('  rocky  ', 10)
+    const params = buildNpsSearchParams('  rocky  ', 10)
     expect(params.get('q')).toBe('rocky')
     expect(params.get('limit')).toBe('10')
   })
 
   it('omits q when the query is empty', () => {
-    const params = buildParkSearchParams('   ')
+    const params = buildNpsSearchParams('   ')
     expect(params.get('q')).toBeNull()
     expect(params.get('limit')).toBe('20')
   })
