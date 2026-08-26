@@ -50,6 +50,7 @@ export type NpsResult = {
   relatedParks?: NpsResult[];
   park?: NpsResult;
   listingDescription?: string;
+  shortDescription?: string;
   bodyText?: string;
 };
 

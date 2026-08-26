@@ -1,5 +1,6 @@
 import { mount } from "@vue/test-utils";
 import { describe, it, expect } from "vitest";
+import { createPinia, setActivePinia } from "pinia";
 import { createMemoryHistory, createRouter } from "vue-router";
 import ParkCard from "./ParkCard.vue";
 import { AVAILABLE_SEARCH_CATEGORIES, type NpsResult } from "@/types/nps";
@@ -8,6 +9,9 @@ function mountCard(props: {
   result: NpsResult;
   category: (typeof AVAILABLE_SEARCH_CATEGORIES)[keyof typeof AVAILABLE_SEARCH_CATEGORIES];
 }) {
+  const pinia = createPinia();
+  setActivePinia(pinia);
+
   const router = createRouter({
     history: createMemoryHistory(),
     routes: [
@@ -23,7 +27,7 @@ function mountCard(props: {
   return mount(ParkCard, {
     props,
     global: {
-      plugins: [router],
+      plugins: [pinia, router],
     },
   });
 }

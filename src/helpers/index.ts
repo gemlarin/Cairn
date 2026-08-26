@@ -1,4 +1,4 @@
-import type { NpsAddress } from "@/types/nps";
+import type { NpsAddress, NpsResult } from "@/types/nps";
 
 export function formatPhoneNumber(
   phoneNumber: string | undefined | null,
@@ -17,6 +17,17 @@ export function formatPhoneNumber(
     return null;
   }
   return cleaned.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+}
+
+export function pickCardImage(images: NpsResult["images"]) {
+  if (!images?.length) return undefined;
+  const rank = (img: (typeof images)[number]) => {
+    const text = `${img.title} ${img.altText} ${img.caption}`.toLowerCase();
+    if (/map|logo|brochure|pamphlet|diagram|floor plan/.test(text)) return 0;
+    if (/sign|entrance sign/.test(text)) return 1;
+    return 2;
+  };
+  return [...images].sort((a, b) => rank(b) - rank(a))[0];
 }
 
 export function formatAddress(

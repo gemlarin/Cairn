@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
 import Logo from "@/assets/logo.svg";
+import { useSignInModal } from "@/composables/useOpenSignInModal";
+import { useAuthStore } from "@/stores/auth";
+import { storeToRefs } from "pinia";
+
+const authStore = useAuthStore();
+const { isSignedIn } = storeToRefs(authStore);
+const { toggleSignInModal } = useSignInModal();
+const { signout } = authStore;
 </script>
 <template>
   <header
@@ -30,9 +38,18 @@ import Logo from "@/assets/logo.svg";
     </div>
     <div class="signin col-span-1 flex justify-end">
       <button
-        class="text-xs text-foreground underline cursor-pointer underline-offset-2 hover:text-accent transition-colors py-2"
+        v-if="!isSignedIn"
+        class="text-xs cursor-pointer text-foreground underline cursor-pointer underline-offset-2 hover:text-accent transition-colors py-2"
+        @click="toggleSignInModal"
       >
         Sign In
+      </button>
+      <button
+        v-else
+        class="text-xs text-foreground cursor-pointer underline cursor-pointer underline-offset-2 hover:text-accent transition-colors py-2"
+        @click="signout"
+      >
+        Sign Out
       </button>
     </div>
   </header>

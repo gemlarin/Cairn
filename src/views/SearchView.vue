@@ -8,33 +8,30 @@ import {
 import SearchForm from "@/components/SearchForm/SearchForm.vue";
 import Results from "@/components/Results/Results.vue";
 import { useSearchStore } from "@/stores/search";
-import { storeToRefs } from "pinia";
 
 const searchStore = useSearchStore();
-const { results, error, searched, loading, term, category } =
-  storeToRefs(searchStore);
 
 async function onSearch(
   searchTerm: string,
   numberOfResults: number,
   searchCategory: AvailableSearchCategories = DEFAULT_SEARCH_CATEGORY,
 ) {
-  error.value = "";
-  searched.value = true;
-  loading.value = true;
-  term.value = searchTerm;
-  category.value = searchCategory;
+  searchStore.error = "";
+  searchStore.searched = true;
+  searchStore.loading = true;
+  searchStore.term = searchTerm;
+  searchStore.category = searchCategory;
   try {
-    results.value = await searchNPS(
+    searchStore.results = await searchNPS(
       searchTerm,
       numberOfResults,
       searchCategory,
     );
   } catch (e) {
-    error.value = e instanceof Error ? e.message : "Search failed";
-    results.value = [];
+    searchStore.error = e instanceof Error ? e.message : "Search failed";
+    searchStore.results = [];
   } finally {
-    loading.value = false;
+    searchStore.loading = false;
   }
 }
 </script>
@@ -43,6 +40,13 @@ async function onSearch(
   <div class="p-5">
     <Header />
     <SearchForm @init-search="onSearch" />
-    <Results :error :searched :term :loading :results :category />
+    <Results
+      :error="searchStore.error"
+      :searched="searchStore.searched"
+      :term="searchStore.term"
+      :loading="searchStore.loading"
+      :results="searchStore.results"
+      :category="searchStore.category"
+    />
   </div>
 </template>
