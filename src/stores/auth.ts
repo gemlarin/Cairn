@@ -3,7 +3,6 @@ import { defineStore } from "pinia";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 
-// Replace with Supabase User (or your own type) when auth is wired
 export type AuthUser = {
   id: string;
   email?: string;

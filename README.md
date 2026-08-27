@@ -2,6 +2,7 @@
 
 A Vue 3 log of U.S. national parks you’ve visited. Search uses the [National Park Service API](https://www.nps.gov/subjects/developer/get-started.htm). Auth uses [Supabase](https://supabase.com/).
 ![Cairn search](./src/docs/screenshots/search.jpg)
+![Cairn search](./src/docs/screenshots/login.jpg)
 ![Cairn details](./src/docs/screenshots/details.jpg)
 
 ## Setup
