@@ -26,7 +26,7 @@ const details = useResultDetails(
 );
 const id = computed(() => props.result.id || props.result.parkCode);
 const hasVisited = computed(() => visitsStore.isVisited(id.value!));
-
+const hasAddedNote = computed(() => visitsStore.hasAddedNote(id.value!));
 watch(imageSrc, () => {
   mediaFailed.value = false;
 });
@@ -72,20 +72,35 @@ function onKeydown(event: KeyboardEvent) {
           @error="onImageError"
         />
       </div>
-      <svg
-        v-if="hasVisited"
-        class="park-card-media__badge text-white"
-        xmlns="http://www.w3.org/2000/svg"
-        height="25"
-        width="25"
-        viewBox="0 -960 960 960"
-        fill="currentColor"
-        aria-hidden="true"
-      >
-        <path
-          d="M480-33.86 183.48-256.25q-14.28-10.57-22.23-26.62-7.95-16.04-7.95-34.13v-496.01q0-30.83 22.38-53.29 22.38-22.47 53.38-22.47h501.88q31.06 0 53.49 22.47 22.43 22.46 22.43 53.29V-317q0 18.09-7.99 34.13-7.99 16.05-22.35 26.62L480-33.86Zm0-94.73 250.94-191.49v-492.93H229.06v492.92L480-128.59Zm-42-231.09 228.15-227.91L616.43-637l-179.1 179.25-94.24-94.24-49.24 49.06L438-359.68Zm42-453.33H229.06h501.88H480Z"
-        />
-      </svg>
+      <div class="park-card-media__icons-wrap flex items-center gap-2">
+        <svg
+          v-if="hasVisited"
+          class="park-card-media__badge text-white"
+          xmlns="http://www.w3.org/2000/svg"
+          height="25px"
+          width="25px"
+          viewBox="0 -960 960 960"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            d="M480-33.86 183.48-256.25q-14.28-10.57-22.23-26.62-7.95-16.04-7.95-34.13v-496.01q0-30.83 22.38-53.29 22.38-22.47 53.38-22.47h501.88q31.06 0 53.49 22.47 22.43 22.46 22.43 53.29V-317q0 18.09-7.99 34.13-7.99 16.05-22.35 26.62L480-33.86Zm0-94.73 250.94-191.49v-492.93H229.06v492.92L480-128.59Zm-42-231.09 228.15-227.91L616.43-637l-179.1 179.25-94.24-94.24-49.24 49.06L438-359.68Zm42-453.33H229.06h501.88H480Z"
+          />
+        </svg>
+        <svg
+          v-if="hasAddedNote"
+          class="park-card-media__badge text-white"
+          xmlns="http://www.w3.org/2000/svg"
+          height="25px"
+          viewBox="0 -960 960 960"
+          width="25px"
+          fill="#FFFFFF"
+        >
+          <path
+            d="M200-200h360v-200h200v-360H200v560Zm0 80q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v400L600-120H200Zm80-280v-80h200v80H280Zm0-160v-80h400v80H280Zm-80 360v-560 560Z"
+          />
+        </svg>
+      </div>
     </div>
     <div class="px-4 py-3.5">
       <p
@@ -129,12 +144,14 @@ function onKeydown(event: KeyboardEvent) {
 }
 
 /* Outside overflow:hidden so drop-shadow is not clipped */
-.park-card-media__badge {
+.park-card-media__icons-wrap {
   position: absolute;
   top: 0.35rem;
   right: 0.35rem;
   z-index: 1;
   pointer-events: none;
+}
+.park-card-media__badge {
   filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.85))
     drop-shadow(0 2px 6px rgb(0 0 0 / 0.45));
 }

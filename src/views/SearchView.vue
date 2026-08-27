@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AuthModal from "@/components/AuthModal/AuthModal.vue";
 import { searchNPS } from "@/api/nps";
 import Header from "@/components/Header/Header.vue";
 import {
@@ -8,8 +9,10 @@ import {
 import SearchForm from "@/components/SearchForm/SearchForm.vue";
 import Results from "@/components/Results/Results.vue";
 import { useSearchStore } from "@/stores/search";
-
+import { useAuthStore } from "@/stores/auth";
 const searchStore = useSearchStore();
+const authStore = useAuthStore();
+const { closeSignInModal } = authStore;
 
 async function onSearch(
   searchTerm: string,
@@ -38,6 +41,7 @@ async function onSearch(
 
 <template>
   <div class="p-5">
+    <AuthModal v-if="authStore.isOpenSignInModal" @close="closeSignInModal" />
     <Header />
     <SearchForm @init-search="onSearch" />
     <Results

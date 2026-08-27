@@ -70,8 +70,10 @@ export const AVAILABLE_SEARCH_CATEGORIES = {
   TOURS: "tours",
 } as const;
 
-export const DEFAULT_LIMIT = 20;
+export type AvailableSearchCategories =
+  (typeof AVAILABLE_SEARCH_CATEGORIES)[keyof typeof AVAILABLE_SEARCH_CATEGORIES];
 
+export const DEFAULT_LIMIT = 20;
 export const DEFAULT_SEARCH_CATEGORY = AVAILABLE_SEARCH_CATEGORIES.PARKS;
 export const DEFAULT_NATIONAL_PARK_LABEL = "National Park";
 export const DEFAULT_TOUR_LABEL = "Tour";
@@ -81,6 +83,28 @@ export const DEFAULT_CAMPGROUND_LABEL = "Campground";
 export const DEFAULT_UNLISTED_PHONE_LABEL = "Unlisted Phone";
 export const DEFAULT_UNLISTED_ADDRESS_LABEL = "Unlisted Address";
 export const DEFAULT_UNKNOWN_LABEL = "Unknown";
+export const DEFAULT_SIGN_IN = "Sign In";
+export const DEFAULT_CREATE_ACCOUNT = "Create Account";
+export const DEFAULT_NEW_HERE = "New here? ";
+export const DEFAULT_ALREADY_HAVE_AN_ACCOUNT = "Already have an account? ";
+export const DEFAULT_WELCOME_BACK = "Welcome back.";
+export const DEFAULT_JOIN_CAIRN = "Join Cairn.";
+export const DEFAULT_WELCOME_BACK_MESSAGE = "Sign in to see your logged parks.";
+export const DEFAULT_JOIN_CAIRN_MESSAGE =
+  "Create an account to save your visits.";
+export const DEFAULT_EMAIL = "you@example.com";
+export const DEFAULT_PASSWORD = "••••••••";
+export const MODE_SIGN_IN = "in";
+export const MODE_CREATE_ACCOUNT = "up";
+export const DEFAULT_NAME = "John Muir";
+export const DEFAULT_ERROR = "An error occurred. Please try again.";
+export const DEFAULT_NAME_LABEL = "Name";
+export const DEFAULT_EMAIL_LABEL = "Email";
+export const DEFAULT_PASSWORD_LABEL = "Password";
+export const DEFAULT_CONFIRM_EMAIL_TITLE = "Check your email.";
+export const DEFAULT_CONFIRM_EMAIL_MESSAGE =
+  "We sent a confirmation link. Confirm your email, then sign in.";
+export const DEFAULT_EMAIL_NOT_CONFIRMED =
+  "Confirm your email before signing in. Check your inbox for the link.";
 
-export type AvailableSearchCategories =
-  (typeof AVAILABLE_SEARCH_CATEGORIES)[keyof typeof AVAILABLE_SEARCH_CATEGORIES];
+export type Mode = typeof MODE_SIGN_IN | typeof MODE_CREATE_ACCOUNT;

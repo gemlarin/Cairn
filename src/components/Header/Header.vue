@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
 import Logo from "@/assets/logo.svg";
-import { useSignInModal } from "@/composables/useOpenSignInModal";
 import { useAuthStore } from "@/stores/auth";
 import { storeToRefs } from "pinia";
 
 const authStore = useAuthStore();
-const { isSignedIn } = storeToRefs(authStore);
-const { toggleSignInModal } = useSignInModal();
+const { isSignedIn, user } = storeToRefs(authStore);
+
+const openSignInModal = () => {
+  authStore.openSignInModal();
+};
+
 const { signout } = authStore;
 </script>
 <template>
@@ -36,17 +39,22 @@ const { signout } = authStore;
         </div>
       </RouterLink>
     </div>
-    <div class="signin col-span-1 flex justify-end">
+    <div class="signin col-span-1 flex justify-end items-center gap-2">
+      <span
+        v-if="isSignedIn && (user?.name || user?.email)"
+        class="text-xs text-muted-foreground"
+        >{{ user?.name || user?.email }}</span
+      ><span v-if="isSignedIn && (user?.name || user?.email)">|</span>
       <button
         v-if="!isSignedIn"
-        class="text-xs cursor-pointer text-foreground underline cursor-pointer underline-offset-2 hover:text-accent transition-colors py-2"
-        @click="toggleSignInModal"
+        class="text-xs cursor-pointer text-accent underline-offset-2 hover:underline transition-colors py-2"
+        @click="openSignInModal"
       >
         Sign In
       </button>
       <button
         v-else
-        class="text-xs text-foreground cursor-pointer underline cursor-pointer underline-offset-2 hover:text-accent transition-colors py-2"
+        class="text-xs cursor-pointer text-accent underline-offset-2 hover:underline transition-colors py-2"
         @click="signout"
       >
         Sign Out

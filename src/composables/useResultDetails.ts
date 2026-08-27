@@ -19,6 +19,7 @@ export type ResultDetails = {
   states?: string;
   title?: string;
   description?: string;
+  url?: string;
 };
 
 export function getResultDetails(
@@ -40,6 +41,7 @@ export function getResultDetails(
       states: item.states || DEFAULT_NOT_APPLICABLE_LABEL,
       title: item.fullName,
       description: item?.description,
+      url: item.url,
     };
   }
 
@@ -52,6 +54,7 @@ export function getResultDetails(
       states: related?.states || DEFAULT_NOT_APPLICABLE_LABEL,
       title: item.title,
       description: item?.shortDescription,
+      url: item.url,
     };
   }
 
@@ -74,6 +77,7 @@ export function getResultDetails(
       states: related?.states || DEFAULT_NOT_APPLICABLE_LABEL,
       title: item.title,
       description: item?.listingDescription,
+      url: item.url,
     };
   }
 
@@ -88,6 +92,7 @@ export function getResultDetails(
       states: related?.states || DEFAULT_NOT_APPLICABLE_LABEL,
       title: item.title,
       description: item?.listingDescription,
+      url: item.url,
     };
   }
 
@@ -104,6 +109,7 @@ export function getResultDetails(
       states: formatAddress(physicalAddress) ?? DEFAULT_UNLISTED_ADDRESS_LABEL,
       title: item.name || DEFAULT_CAMPGROUND_LABEL,
       description: item?.description,
+      url: item.url,
     };
   }
 

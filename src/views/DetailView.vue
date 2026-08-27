@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AuthModal from "@/components/AuthModal/AuthModal.vue";
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import missingImage from "@/assets/missing.png";
@@ -6,11 +7,15 @@ import { useSearchStore } from "@/stores/search";
 import Details from "@/components/Details/Details.vue";
 import type { AvailableSearchCategories } from "@/types/nps";
 import { pickCardImage } from "@/helpers";
+import { useAuthStore } from "@/stores/auth";
 
+const authStore = useAuthStore();
 const props = defineProps<{
   category: AvailableSearchCategories;
   id: string;
 }>();
+
+const { closeSignInModal } = authStore;
 
 const router = useRouter();
 const searchStore = useSearchStore();
@@ -44,6 +49,7 @@ function goBack() {
 </script>
 
 <template>
+  <AuthModal v-if="authStore.isOpenSignInModal" @close="closeSignInModal" />
   <div class="min-h-screen bg-background font-sans lg:flex">
     <!-- Left column: photo, sticky on desktop -->
     <div

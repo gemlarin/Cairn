@@ -3,7 +3,6 @@ import { computed, ref, watch } from "vue";
 import { useSearchStore } from "@/stores/search";
 import { useResultDetails } from "@/composables/useResultDetails";
 import type { AvailableSearchCategories } from "@/types/nps";
-import { useSignInModal } from "@/composables/useOpenSignInModal";
 import { useAuthStore } from "@/stores/auth";
 import { useVisitsStore } from "@/stores/visits";
 import { storeToRefs } from "pinia";
@@ -11,10 +10,9 @@ import { storeToRefs } from "pinia";
 const authStore = useAuthStore();
 const visitsStore = useVisitsStore();
 const { addVisited, removeVisited, isVisited, saveNote } = visitsStore;
-const { isSignedIn } = storeToRefs(authStore);
+const { isSignedIn, user } = storeToRefs(authStore);
 const { notes, savingNote } = storeToRefs(visitsStore);
-const { toggleSignInModal } = useSignInModal();
-const { signout } = authStore;
+const { signout, openSignInModal } = authStore;
 
 const searchStore = useSearchStore();
 const props = defineProps<{
@@ -26,18 +24,53 @@ const result = computed(() => searchStore.findById(props.id));
 const details = useResultDetails(result, () => props.category);
 
 const draft = ref("");
-/** Button label state — set true only after a successful save; cleared on edit. */
-const isNoteSaved = ref(false);
+/** Checkbox can toggle off; a lone radio cannot. */
+const markNoteForDelete = ref(false);
+
+const savedNoteEntry = computed(() =>
+  notes.value.find((note) => note.id === props.id && note.savedOn !== null),
+);
+
+const hasSavedNote = computed(() => !!savedNoteEntry.value);
+
+const savedNoteText = computed(() => savedNoteEntry.value?.note ?? "");
+
+/** True when draft is new non-empty text or differs from the saved note. */
+const isDraftDirty = computed(() => {
+  if (!hasSavedNote.value) return draft.value.trim().length > 0;
+  return draft.value !== savedNoteText.value;
+});
+
+/**
+ * Save enabled only when:
+ * 1. User entered new text (no saved note yet), or
+ * 2. User edited existing saved text, or
+ * 3. Delete is checked and a saved note exists
+ * Delete must not clear Save when the draft is already dirty.
+ */
+const canSave = computed(() => {
+  if (savingNote.value) return false;
+  return isDraftDirty.value || (markNoteForDelete.value && hasSavedNote.value);
+});
+
+const saveButtonLabel = computed(() => {
+  if (canSave.value) return "Save Note";
+  return hasSavedNote.value ? "Saved" : "Save Note";
+});
 
 watch(
   () => props.id,
   (id) => {
     const entry = notes.value.find((note) => note.id === id);
     draft.value = entry?.note ?? "";
-    isNoteSaved.value = !!entry && entry.savedOn !== null;
+    markNoteForDelete.value = false;
   },
   { immediate: true },
 );
+
+watch(hasSavedNote, (hasNote) => {
+  if (!hasNote) markNoteForDelete.value = false;
+});
 
 const noteSavedOn = computed(
   () => notes.value.find((note) => note.id === props.id)?.savedOn ?? undefined,
@@ -51,31 +84,31 @@ const handleVisitToggle = () => {
   }
 };
 
-const onDraftInput = () => {
-  isNoteSaved.value = false;
-};
-
 const handleSaveNote = async () => {
-  if (isNoteSaved.value || savingNote.value) return;
+  if (!canSave.value) return;
 
-  const saved = await saveNote(props.id, draft.value);
-  if (saved) {
-    isNoteSaved.value = true;
+  if (markNoteForDelete.value) {
+    await saveNote(props.id, draft.value, true);
+    draft.value = "";
+    markNoteForDelete.value = false;
+    return;
   }
+
+  await saveNote(props.id, draft.value, false);
 };
 
-const handleNoteFocus = () => {
-  if (!isSignedIn.value) {
-    toggleSignInModal();
-  }
-};
+// const handleNoteFocus = () => {
+//   if (!isSignedIn.value) {
+//     toggleSignInModal();
+//   }
+// };
 </script>
 
 <template>
   <div class="lg:flex-1 px-6 sm:px-10 lg:px-14 py-10 lg:py-16 lg:min-h-screen">
     <div class="max-w-md">
       <p
-        class="text-[9px] uppercase tracking-[0.18em] text-muted-foreground mb-2.5"
+        class="text-[0.5625rem] uppercase tracking-[0.18em] text-muted-foreground mb-2.5"
       >
         {{ details.label }}&ensp;·&ensp;{{ details.states }}
       </p>
@@ -86,16 +119,20 @@ const handleNoteFocus = () => {
       </h1>
       <div
         class="border-t border-b border-border p-5 flex items-center justify-between"
+        :class="{ 'justify-end': category === 'people' }"
       >
         <button
           type="button"
+          v-if="category !== 'people'"
+          :disabled="!isSignedIn"
           @click="handleVisitToggle"
-          class="flex items-center gap-3 group min-h-11 cursor-pointer"
+          class="flex items-center gap-3 group min-h-11 cursor-pointer group"
           :aria-label="
             isVisited(props.id) ? 'Unmark visited' : 'Mark as visited'
           "
         >
-          <span class="size-8 flex items-center justify-center bg-muted border"
+          <span
+            class="size-8 flex items-center justify-center bg-muted border group-hover:scale-97 transition-transform duration-200"
             ><svg
               v-if="isVisited(props.id)"
               xmlns="http://www.w3.org/2000/svg"
@@ -118,37 +155,52 @@ const handleNoteFocus = () => {
             I was here.
           </span>
         </button>
-        <button
-          v-if="!isSignedIn"
-          type="button"
-          @click="toggleSignInModal"
-          class="text-[0.625rem] text-muted-foreground cursor-pointer underline underline-offset-2 hover:text-foreground transition-colors tracking-wide py-2"
-        >
-          Sign in to save
-        </button>
-        <button
-          v-else
-          type="button"
-          @click="signout"
-          class="text-[0.625rem] text-muted-foreground cursor-pointer underline underline-offset-2 hover:text-foreground transition-colors tracking-wide py-2"
-        >
-          Sign out
-        </button>
+        <span>
+          <span
+            class="text-[0.625rem] text-muted-foreground mr-1"
+            v-if="isSignedIn && (user?.name || user?.email)"
+            >{{ user?.name || user?.email }}</span
+          >
+          <span
+            v-if="isSignedIn && (user?.name || user?.email)"
+            class="text-xs text-muted-foreground mr-1"
+            >|</span
+          >
+          <button
+            v-if="!isSignedIn"
+            type="button"
+            @click="openSignInModal"
+            class="text-[0.625rem] cursor-pointer text-accent underline-offset-2 hover:underline transition-colors py-2"
+          >
+            Sign in to save
+          </button>
+          <button
+            v-else
+            type="button"
+            @click="signout"
+            class="text-[0.625rem] text-accent cursor-pointer underline-offset-2 hover:underline transition-colors tracking-wide py-2"
+          >
+            Sign out
+          </button>
+        </span>
       </div>
       <div class="mt-7">
-        <p class="text-[14px] text-foreground mb-7">
+        <p class="text-[0.6875rem] text-foreground mb-7">
           {{ details.description }}
         </p>
-        <p
-          class="text-[0.5625rem] uppercase tracking-[0.18em] text-muted-foreground mb-3"
-        >
-          Visit Notes
-        </p>
+        <div class="flex items-center gap-2 mb-3">
+          <p
+            class="text-[0.5625rem] uppercase tracking-[0.18em] text-muted-foreground"
+          >
+            <span v-if="category !== 'people'">Visit Notes</span>
+            <span v-else>People Notes</span>
+          </p>
+        </div>
+
         <div class="relative">
           <textarea
+            :disabled="!isSignedIn"
             v-model="draft"
-            @input="onDraftInput"
-            @focus="handleNoteFocus"
             placeholder="What did you see? What do you want to remember?"
             :rows="6"
             class="w-full border border-border bg-transparent px-3.5 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground transition-colors resize-none font-mono leading-relaxed"
@@ -163,7 +215,7 @@ const handleNoteFocus = () => {
           </div>
         </div>
         <div class="flex items-center justify-between mt-3">
-          <p class="text-[10px] text-muted-foreground" v-if="noteSavedOn">
+          <p class="text-[0.625rem] text-muted-foreground" v-if="noteSavedOn">
             Last saved
             {{
               new Date(noteSavedOn).toLocaleDateString("en-US", {
@@ -176,17 +228,50 @@ const handleNoteFocus = () => {
           <button
             type="button"
             @click="handleSaveNote"
-            :disabled="isNoteSaved || savingNote"
+            :disabled="!canSave"
             :class="
-              isNoteSaved
-                ? 'bg-muted text-muted-foreground cursor-default'
-                : 'bg-primary text-primary-foreground hover:opacity-90 cursor-pointer'
+              canSave
+                ? 'bg-primary text-primary-foreground hover:opacity-90 cursor-pointer'
+                : 'bg-muted text-muted-foreground cursor-default'
             "
-            class="ml-auto px-5 py-2.5 text-[10px] uppercase tracking-widest transition-all min-h-10"
+            class="ml-auto px-5 py-2.5 text-[0.625rem] uppercase hover:scale-99 tracking-widest transition-all min-h-10"
           >
-            {{ isNoteSaved ? "Saved" : "Save Note" }}
+            {{ saveButtonLabel }}
           </button>
         </div>
+        <label
+          class="mt-3 ml-auto flex w-fit items-center gap-2"
+          :class="
+            hasSavedNote ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
+          "
+        >
+          <input
+            v-model="markNoteForDelete"
+            type="checkbox"
+            id="remove-note"
+            class="peer sr-only"
+            :disabled="!hasSavedNote"
+          />
+          <span
+            class="size-4 shrink-0 rounded-full border border-muted-foreground flex items-center justify-center after:content-[''] after:size-2 after:rounded-full after:bg-transparent peer-checked:border-accent peer-checked:after:bg-accent peer-enabled:peer-focus-visible:outline peer-enabled:peer-focus-visible:outline-2 peer-enabled:peer-focus-visible:outline-offset-2 peer-enabled:peer-focus-visible:outline-accent"
+            aria-hidden="true"
+          />
+          <span
+            class="text-[0.625rem] text-muted-foreground peer-checked:text-accent"
+          >
+            Delete Note
+          </span>
+        </label>
+      </div>
+      <div class="mt-5 pt-7 border-t border-border">
+        <a
+          :href="details.url"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[10px] uppercase tracking-widest text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+        >
+          Official NPS page →
+        </a>
       </div>
     </div>
   </div>

@@ -23,6 +23,9 @@ export const useVisitsStore = defineStore("visits", {
       return (id: string) =>
         state.notes.find((note) => note.id === id)?.savedOn ?? undefined;
     },
+    hasAddedNote: (state) => {
+      return (id: string) => state.notes.some((note) => note.id === id);
+    },
   },
   actions: {
     addVisited(id: string) {
@@ -49,7 +52,11 @@ export const useVisitsStore = defineStore("visits", {
       return this.notes.find((note) => note.id === id)?.note;
     },
     /** Persist draft text. Updates store only after a successful save path. */
-    async saveNote(id: string, note: string): Promise<VisitNote | undefined> {
+    async saveNote(
+      id: string,
+      note: string,
+      remove: boolean = false,
+    ): Promise<VisitNote | undefined> {
       const authStore = useAuthStore();
       //   if (!authStore.isSignedIn) {
       //     return undefined;
@@ -64,7 +71,16 @@ export const useVisitsStore = defineStore("visits", {
         };
 
         // TODO: await upsertVisitNote(toSave) to Supabase
+        // Including remove: boolean in the request
         // If the request fails, leave the store unchanged and rethrow / return undefined
+        // if(remove) {
+
+        // }
+
+        if (remove) {
+          this.notes = this.notes.filter((entry) => entry.id !== id);
+          return undefined;
+        }
 
         const exists = this.notes.some((entry) => entry.id === id);
         this.notes = exists
