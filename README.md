@@ -51,8 +51,6 @@ These use the `VITE_` prefix on purpose — they are public client config. Do **
 
 ## Backlog
 
-See also `~/Desktop/career gameplan/39-parkkeep.md`.
-
 - [ ] Disable visit checkbox + notes when logged out; click opens sign-in modal
 - [x] Auth service (Supabase email sign-in / sign-up)
 - [ ] Database service (visits table + RLS)
