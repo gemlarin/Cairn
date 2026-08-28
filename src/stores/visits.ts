@@ -59,6 +59,8 @@ export const useVisitsStore = defineStore("visits", {
     visited: [] as string[],
     notes: [] as VisitNote[],
     savingNote: false,
+    /** Bumped to ignore stale loadFromSupabase results after local edits. */
+    loadSeq: 0,
   }),
   getters: {
     isVisited: (state) => {
@@ -74,6 +76,7 @@ export const useVisitsStore = defineStore("visits", {
   },
   actions: {
     clear() {
+      this.loadSeq += 1;
       this.visited = [];
       this.notes = [];
     },
@@ -83,9 +86,14 @@ export const useVisitsStore = defineStore("visits", {
         this.clear();
         return;
       }
+
+      const seq = ++this.loadSeq;
       const rows = await fetchVisits();
-      // Session may have ended while the request was in flight
+
+      // Stale: a newer load started, or the user edited visits while this was in flight
+      if (seq !== this.loadSeq) return;
       if (!useAuthStore().isSignedIn) return;
+
       this.visited = rows
         .filter((row) => row.visited)
         .map((row) => row.item_id);
@@ -101,7 +109,9 @@ export const useVisitsStore = defineStore("visits", {
       const authStore = useAuthStore();
       if (!authStore.isSignedIn) return;
 
-      // Optimistic: update UI first, then persist
+      // Invalidate in-flight loads so they can't wipe this optimistic update
+      this.loadSeq += 1;
+
       const already = this.visited.includes(id);
       if (!already) this.visited.push(id);
 
@@ -117,6 +127,8 @@ export const useVisitsStore = defineStore("visits", {
     async removeVisited(id: string) {
       const authStore = useAuthStore();
       if (!authStore.isSignedIn) return;
+
+      this.loadSeq += 1;
 
       const previous = [...this.visited];
       this.visited = this.visited.filter((visited) => visited !== id);
@@ -140,6 +152,7 @@ export const useVisitsStore = defineStore("visits", {
       const authStore = useAuthStore();
       if (!authStore.isSignedIn) return;
 
+      this.loadSeq += 1;
       this.savingNote = true;
       try {
         if (remove) {

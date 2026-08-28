@@ -32,13 +32,19 @@ export const useAuthStore = defineStore("auth", {
       });
     },
     setSessionUser(user: User | null) {
+      const prevId = this.user?.id ?? null;
+      const nextId = user?.id ?? null;
       this.user = user ? toAuthUser(user) : null;
       this.isSignedIn = !!user;
+
       const visitsStore = useVisitsStore();
-      if (user) {
-        void visitsStore.loadFromSupabase();
-      } else {
+      if (!user) {
         visitsStore.clear();
+        return;
+      }
+      // Avoid re-fetch on TOKEN_REFRESHED / duplicate auth events (same user)
+      if (nextId !== prevId) {
+        void visitsStore.loadFromSupabase();
       }
     },
     async signIn(email: string, password: string) {

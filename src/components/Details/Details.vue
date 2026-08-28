@@ -88,6 +88,13 @@ const handleVisitToggle = async () => {
   }
 };
 
+/** Focus: prompt sign-in only. Do not toggle visited (click already does). */
+const handleVisitFocus = () => {
+  if (!isSignedIn.value) {
+    openSignInModal();
+  }
+};
+
 const handleNoteInteract = () => {
   if (!isSignedIn.value) {
     openSignInModal();
@@ -133,7 +140,7 @@ const handleSaveNote = async () => {
           type="button"
           v-if="category !== 'people'"
           @click="handleVisitToggle"
-          @focus="handleVisitToggle"
+          @focus="handleVisitFocus"
           class="flex items-center gap-3 group min-h-11 cursor-pointer group"
           :aria-label="
             isVisited(props.id) ? 'Unmark visited' : 'Mark as visited'
