@@ -51,10 +51,11 @@ These use the `VITE_` prefix on purpose — they are public client config. Do **
 
 ## Backlog
 
-- [ ] Disable visit checkbox + notes when logged out; click opens sign-in modal
+- [x] Disable visit checkbox + notes when logged out; click opens sign-in modal
 - [x] Auth service (Supabase email sign-in / sign-up)
-- [ ] Database service (visits table + RLS)
+- [x] Database service (visits table + RLS)
 - [ ] NPS caching (stay under ~1000 calls/day; key server-side only)
 - [x] Sign-in modal/drawer
-- [ ] ParkCard marker when item has notes (visited badge already exists)
+- [x] ParkCard marker when item has notes (visited badge already exists)
 - [ ] Save/delete error handling — fail: keep note / keep Save enabled for retry; show error; mutate UI only on success
+- [ ] Pagination — 20 results per page (NPS `limit` / `start`)

@@ -59,8 +59,8 @@ const saveButtonLabel = computed(() => {
 });
 
 watch(
-  () => props.id,
-  (id) => {
+  [() => props.id, notes],
+  ([id]) => {
     const entry = notes.value.find((note) => note.id === id);
     draft.value = entry?.note ?? "";
     markNoteForDelete.value = false;
@@ -76,15 +76,29 @@ const noteSavedOn = computed(
   () => notes.value.find((note) => note.id === props.id)?.savedOn ?? undefined,
 );
 
-const handleVisitToggle = () => {
+const handleVisitToggle = async () => {
+  if (!isSignedIn.value) {
+    openSignInModal();
+    return;
+  }
   if (isVisited(props.id)) {
-    removeVisited(props.id);
+    await removeVisited(props.id);
   } else {
-    addVisited(props.id);
+    await addVisited(props.id);
+  }
+};
+
+const handleNoteInteract = () => {
+  if (!isSignedIn.value) {
+    openSignInModal();
   }
 };
 
 const handleSaveNote = async () => {
+  if (!isSignedIn.value) {
+    openSignInModal();
+    return;
+  }
   if (!canSave.value) return;
 
   if (markNoteForDelete.value) {
@@ -96,12 +110,6 @@ const handleSaveNote = async () => {
 
   await saveNote(props.id, draft.value, false);
 };
-
-// const handleNoteFocus = () => {
-//   if (!isSignedIn.value) {
-//     toggleSignInModal();
-//   }
-// };
 </script>
 
 <template>
@@ -124,8 +132,8 @@ const handleSaveNote = async () => {
         <button
           type="button"
           v-if="category !== 'people'"
-          :disabled="!isSignedIn"
           @click="handleVisitToggle"
+          @focus="handleVisitToggle"
           class="flex items-center gap-3 group min-h-11 cursor-pointer group"
           :aria-label="
             isVisited(props.id) ? 'Unmark visited' : 'Mark as visited'
@@ -199,7 +207,9 @@ const handleSaveNote = async () => {
 
         <div class="relative">
           <textarea
-            :disabled="!isSignedIn"
+            :readonly="!isSignedIn"
+            @click="handleNoteInteract"
+            @focus="handleNoteInteract"
             v-model="draft"
             placeholder="What did you see? What do you want to remember?"
             :rows="6"

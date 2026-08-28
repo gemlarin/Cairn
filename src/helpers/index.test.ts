@@ -1,6 +1,11 @@
 // formatPhoneNumber.test.ts
 import { describe, it, expect } from "vitest";
-import { formatPhoneNumber, formatAddress, npsImageUrl } from "./index";
+import {
+  formatPhoneNumber,
+  formatAddress,
+  npsImageUrl,
+  truncate,
+} from "./index";
 
 describe("formatPhoneNumber", () => {
   it("should format a standard 10-digit phone number string", () => {
@@ -78,5 +83,31 @@ describe("npsImageUrl", () => {
 
   it("returns null when the url is missing", () => {
     expect(npsImageUrl(undefined, 1200, 1600)).toBeNull();
+  });
+});
+
+describe("truncate", () => {
+  it("should truncate to a given length", () => {
+    const input = "This is a test string";
+    const expected = "This is a test...";
+    expect(truncate(input, 14)).toBe(expected);
+  });
+  it("should return null if the text is undefined", () => {
+    const input = undefined;
+    expect(truncate(input, 14)).toBeNull();
+  });
+  it("should return null if the text is null", () => {
+    const input = null;
+    expect(truncate(input, 14)).toBeNull();
+  });
+  it("should return the text if it is less than the given length", () => {
+    const input = "This is a test string";
+    const expected = "This is a test string";
+    expect(truncate(input, 30)).toBe(expected);
+  });
+  it("should return the text if it is equal to the given length", () => {
+    const input = "This";
+    const expected = "This";
+    expect(truncate(input, 4)).toBe(expected);
   });
 });

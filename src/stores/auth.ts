@@ -2,16 +2,8 @@
 import { defineStore } from "pinia";
 import { supabase } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
-
-export type AuthUser = {
-  id: string;
-  email?: string;
-  name?: string;
-};
-
-export type SignUpResult =
-  | { status: "signed_in" }
-  | { status: "confirm_email" };
+import type { AuthUser, SignUpResult } from "@/types/nps";
+import { useVisitsStore } from "@/stores/visits";
 
 function toAuthUser(user: User): AuthUser {
   const metaName = user.user_metadata?.name;
@@ -42,6 +34,12 @@ export const useAuthStore = defineStore("auth", {
     setSessionUser(user: User | null) {
       this.user = user ? toAuthUser(user) : null;
       this.isSignedIn = !!user;
+      const visitsStore = useVisitsStore();
+      if (user) {
+        void visitsStore.loadFromSupabase();
+      } else {
+        visitsStore.clear();
+      }
     },
     async signIn(email: string, password: string) {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -57,7 +55,6 @@ export const useAuthStore = defineStore("auth", {
       const user = data.session?.user ?? data.user;
       if (!user) throw new Error("No user returned");
       this.setSessionUser(user);
-      // TODO later: load notes / visited from DB
     },
     async signUp(
       email: string,

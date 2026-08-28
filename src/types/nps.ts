@@ -22,16 +22,28 @@ export type NpsContact = {
   phoneNumbers?: NpsPhoneNumber[];
   emailAddresses?: NpsEmailAddress[];
 };
+
 export type NpsEmailAddress = {
   emailAddress?: string;
   description?: string;
 };
+
 export type NpsPhoneNumber = {
   phoneNumber?: string;
   description?: string;
   extension?: string;
   type?: "Voice" | "Fax" | "TTY";
 };
+
+export type AuthUser = {
+  id?: string;
+  email?: string;
+  name?: string;
+} | null;
+
+export type SignUpResult =
+  | { status: "signed_in" }
+  | { status: "confirm_email" };
 
 /** Shared shape for NPS list endpoints (parks, tours, things to do, etc.). */
 export type NpsResult = {
@@ -69,6 +81,30 @@ export const AVAILABLE_SEARCH_CATEGORIES = {
   THINGS_TO_DO: "thingstodo",
   TOURS: "tours",
 } as const;
+
+export type VisitRow = {
+  id: string;
+  user_id: string;
+  item_id: string;
+  visited: boolean;
+  note: string | null;
+  saved_on: string | null;
+  updated_at: string;
+};
+
+export type VisitNote = {
+  id: string;
+  note: string;
+  /** Timestamp of last successful save; null until first save. */
+  savedOn: number | null;
+};
+
+export type VisitUpsert = {
+  item_id: string;
+  visited?: boolean;
+  note?: string | null;
+  saved_on?: string | null;
+};
 
 export type AvailableSearchCategories =
   (typeof AVAILABLE_SEARCH_CATEGORIES)[keyof typeof AVAILABLE_SEARCH_CATEGORIES];
