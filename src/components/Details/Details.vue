@@ -10,8 +10,8 @@ import { storeToRefs } from "pinia";
 const authStore = useAuthStore();
 const visitsStore = useVisitsStore();
 const { addVisited, removeVisited, isVisited, saveNote } = visitsStore;
-const { isSignedIn, user } = storeToRefs(authStore);
-const { notes, savingNote } = storeToRefs(visitsStore);
+const { isSignedIn } = storeToRefs(authStore);
+const { notes, savingNote, visitError, noteError } = storeToRefs(visitsStore);
 const { signout, openSignInModal } = authStore;
 
 const searchStore = useSearchStore();
@@ -81,10 +81,14 @@ const handleVisitToggle = async () => {
     openSignInModal();
     return;
   }
-  if (isVisited(props.id)) {
-    await removeVisited(props.id);
-  } else {
-    await addVisited(props.id);
+  try {
+    if (isVisited(props.id)) {
+      await removeVisited(props.id);
+    } else {
+      await addVisited(props.id);
+    }
+  } catch {
+    // visitError set in the store
   }
 };
 
@@ -108,14 +112,18 @@ const handleSaveNote = async () => {
   }
   if (!canSave.value) return;
 
-  if (markNoteForDelete.value) {
-    await saveNote(props.id, draft.value, true);
-    draft.value = "";
-    markNoteForDelete.value = false;
-    return;
-  }
+  try {
+    if (markNoteForDelete.value) {
+      await saveNote(props.id, draft.value, true);
+      draft.value = "";
+      markNoteForDelete.value = false;
+      return;
+    }
 
-  await saveNote(props.id, draft.value, false);
+    await saveNote(props.id, draft.value, false);
+  } catch {
+    // noteError set in the store; keep draft + Delete checked for retry
+  }
 };
 </script>
 
@@ -133,71 +141,72 @@ const handleSaveNote = async () => {
         {{ details.title }}
       </h1>
       <div
-        class="border-t border-b border-border p-5 flex items-center justify-between"
-        :class="{ 'justify-end': category === 'people' }"
+        class="border-t border-b border-border p-5 flex flex-col gap-2"
+        :class="{ 'items-end': category === 'people' }"
       >
-        <button
-          type="button"
-          v-if="category !== 'people'"
-          @click="handleVisitToggle"
-          @focus="handleVisitFocus"
-          class="flex items-center gap-3 group min-h-11 cursor-pointer group"
-          :aria-label="
-            isVisited(props.id) ? 'Unmark visited' : 'Mark as visited'
-          "
+        <div
+          class="flex w-full items-center justify-between"
+          :class="{ 'justify-end': category === 'people' }"
         >
-          <span
-            class="size-8 flex items-center justify-center bg-muted border group-hover:scale-97 transition-transform duration-200"
-            ><svg
-              v-if="isVisited(props.id)"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="lucide lucide-check"
-            >
-              <path d="M20 6 9 17l-5-5" /></svg
-          ></span>
+          <button
+            type="button"
+            v-if="category !== 'people'"
+            @click="handleVisitToggle"
+            @focus="handleVisitFocus"
+            class="flex items-center gap-3 group min-h-11 cursor-pointer group"
+            :aria-label="
+              isVisited(props.id) ? 'Unmark visited' : 'Mark as visited'
+            "
+          >
+            <span
+              class="size-8 flex items-center justify-center bg-muted border group-hover:scale-97 transition-transform duration-200"
+              ><svg
+                v-if="isVisited(props.id)"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-check"
+              >
+                <path d="M20 6 9 17l-5-5" /></svg
+            ></span>
 
-          <span
-            class="font-serif text-xl text-foreground leading-none select-none"
-          >
-            I was here.
+            <span
+              class="font-serif text-xl text-foreground leading-none select-none"
+            >
+              I was here.
+            </span>
+          </button>
+          <span>
+            <button
+              v-if="!isSignedIn"
+              type="button"
+              @click="openSignInModal"
+              class="text-[0.625rem] cursor-pointer text-accent underline-offset-2 hover:underline transition-colors py-2"
+            >
+              Sign in to save
+            </button>
+            <button
+              v-else
+              type="button"
+              @click="signout"
+              class="text-[0.625rem] text-accent cursor-pointer underline-offset-2 hover:underline transition-colors tracking-wide py-2"
+            >
+              Sign out
+            </button>
           </span>
-        </button>
-        <span>
-          <span
-            class="text-[0.625rem] text-muted-foreground mr-1"
-            v-if="isSignedIn && (user?.name || user?.email)"
-            >{{ user?.name || user?.email }}</span
-          >
-          <span
-            v-if="isSignedIn && (user?.name || user?.email)"
-            class="text-xs text-muted-foreground mr-1"
-            >|</span
-          >
-          <button
-            v-if="!isSignedIn"
-            type="button"
-            @click="openSignInModal"
-            class="text-[0.625rem] cursor-pointer text-accent underline-offset-2 hover:underline transition-colors py-2"
-          >
-            Sign in to save
-          </button>
-          <button
-            v-else
-            type="button"
-            @click="signout"
-            class="text-[0.625rem] text-accent cursor-pointer underline-offset-2 hover:underline transition-colors tracking-wide py-2"
-          >
-            Sign out
-          </button>
-        </span>
+        </div>
+        <div
+          v-if="visitError"
+          class="w-full text-[0.625rem] text-red-500 text-left"
+        >
+          {{ visitError }}
+        </div>
       </div>
       <div class="mt-7">
         <p class="text-[0.6875rem] text-foreground mb-7">
@@ -231,6 +240,9 @@ const handleSaveNote = async () => {
             ></div>
           </div>
         </div>
+        <p v-if="noteError" class="mt-2 text-[0.625rem] text-red-500 text-left">
+          {{ noteError }}
+        </p>
         <div class="flex items-center justify-between mt-3">
           <p class="text-[0.625rem] text-muted-foreground" v-if="noteSavedOn">
             Last saved

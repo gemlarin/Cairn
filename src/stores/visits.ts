@@ -2,7 +2,12 @@
 import { defineStore } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 import { supabase } from "@/lib/supabase";
-import { type VisitRow, type VisitNote, type VisitUpsert } from "@/types/nps";
+import {
+  type VisitRow,
+  type VisitNote,
+  type VisitUpsert,
+  DEFAULT_SAVE_ERROR,
+} from "@/types/nps";
 
 export async function upsertVisit(partial: VisitUpsert): Promise<VisitRow> {
   const userId = await requireUserId();
@@ -59,6 +64,10 @@ export const useVisitsStore = defineStore("visits", {
     visited: [] as string[],
     notes: [] as VisitNote[],
     savingNote: false,
+    /** Visit toggle error (checkbox row). */
+    visitError: null as string | null,
+    /** Note save/delete error. */
+    noteError: null as string | null,
     /** Bumped to ignore stale loadFromSupabase results after local edits. */
     loadSeq: 0,
   }),
@@ -79,6 +88,8 @@ export const useVisitsStore = defineStore("visits", {
       this.loadSeq += 1;
       this.visited = [];
       this.notes = [];
+      this.visitError = null;
+      this.noteError = null;
     },
     async loadFromSupabase() {
       const authStore = useAuthStore();
@@ -109,7 +120,7 @@ export const useVisitsStore = defineStore("visits", {
       const authStore = useAuthStore();
       if (!authStore.isSignedIn) return;
 
-      // Invalidate in-flight loads so they can't wipe this optimistic update
+      this.visitError = null;
       this.loadSeq += 1;
 
       const already = this.visited.includes(id);
@@ -118,6 +129,7 @@ export const useVisitsStore = defineStore("visits", {
       try {
         await upsertVisit({ item_id: id, visited: true });
       } catch (error) {
+        this.visitError = DEFAULT_SAVE_ERROR;
         if (!already) {
           this.visited = this.visited.filter((visited) => visited !== id);
         }
@@ -128,6 +140,7 @@ export const useVisitsStore = defineStore("visits", {
       const authStore = useAuthStore();
       if (!authStore.isSignedIn) return;
 
+      this.visitError = null;
       this.loadSeq += 1;
 
       const previous = [...this.visited];
@@ -136,6 +149,7 @@ export const useVisitsStore = defineStore("visits", {
       try {
         await upsertVisit({ item_id: id, visited: false });
       } catch (error) {
+        this.visitError = DEFAULT_SAVE_ERROR;
         this.visited = previous;
         throw error;
       }
@@ -143,7 +157,7 @@ export const useVisitsStore = defineStore("visits", {
     getNote(id: string) {
       return this.notes.find((note) => note.id === id)?.note;
     },
-    /** Persist draft text. Updates store only after a successful save path. */
+    /** Persist draft text. Updates store only after a successful save. */
     async saveNote(
       id: string,
       note: string,
@@ -152,6 +166,7 @@ export const useVisitsStore = defineStore("visits", {
       const authStore = useAuthStore();
       if (!authStore.isSignedIn) return;
 
+      this.noteError = null;
       this.loadSeq += 1;
       this.savingNote = true;
       try {
@@ -175,6 +190,9 @@ export const useVisitsStore = defineStore("visits", {
           : [...this.notes, toSave];
 
         return toSave;
+      } catch (error) {
+        this.noteError = DEFAULT_SAVE_ERROR;
+        throw error;
       } finally {
         this.savingNote = false;
       }

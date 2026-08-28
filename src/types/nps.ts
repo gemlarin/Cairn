@@ -142,5 +142,6 @@ export const DEFAULT_CONFIRM_EMAIL_MESSAGE =
   "We sent a confirmation link. Confirm your email, then sign in.";
 export const DEFAULT_EMAIL_NOT_CONFIRMED =
   "Confirm your email before signing in. Check your inbox for the link.";
+export const DEFAULT_SAVE_ERROR = "Failed to save. Please try again.";
 
 export type Mode = typeof MODE_SIGN_IN | typeof MODE_CREATE_ACCOUNT;

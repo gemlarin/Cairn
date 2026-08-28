@@ -34,17 +34,12 @@ const { signout } = authStore;
             id="subtitle"
             class="text-xs text-muted-foreground mt-1.2 tracking-wided"
           >
-            Your personal National Parks travel log.
+            National Parks travel log.
           </p>
         </div>
       </RouterLink>
     </div>
     <div class="signin col-span-1 flex justify-end items-center gap-2">
-      <span
-        v-if="isSignedIn && (user?.name || user?.email)"
-        class="text-xs text-muted-foreground"
-        >{{ user?.name || user?.email }}</span
-      ><span v-if="isSignedIn && (user?.name || user?.email)">|</span>
       <button
         v-if="!isSignedIn"
         class="text-xs cursor-pointer text-accent underline-offset-2 hover:underline transition-colors py-2"
