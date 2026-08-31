@@ -10,9 +10,18 @@ import SearchForm from "@/components/SearchForm/SearchForm.vue";
 import Results from "@/components/Results/Results.vue";
 import { useSearchStore } from "@/stores/search";
 import { useAuthStore } from "@/stores/auth";
+import { onMounted } from "vue";
+
 const searchStore = useSearchStore();
 const authStore = useAuthStore();
 const { closeSignInModal } = authStore;
+
+// Field Log used to bleed into results; keep search blank until the user searches
+onMounted(() => {
+  if (!searchStore.searched) {
+    searchStore.clearResults();
+  }
+});
 
 async function onSearch(
   searchTerm: string,
@@ -40,10 +49,10 @@ async function onSearch(
 </script>
 
 <template>
+  <AuthModal v-if="authStore.isOpenSignInModal" @close="closeSignInModal" />
+  <Header />
+  <SearchForm @init-search="onSearch" />
   <div class="p-5">
-    <AuthModal v-if="authStore.isOpenSignInModal" @close="closeSignInModal" />
-    <Header />
-    <SearchForm @init-search="onSearch" />
     <Results
       :error="searchStore.error"
       :searched="searchStore.searched"

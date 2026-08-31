@@ -4,10 +4,12 @@ import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import missingImage from "@/assets/missing.png";
 import { useSearchStore } from "@/stores/search";
+import { useVisitsStore } from "@/stores/visits";
 import Details from "@/components/Details/Details.vue";
-import type { AvailableSearchCategories } from "@/types/nps";
+import type { AvailableSearchCategories, NpsResult } from "@/types/nps";
 import { pickCardImage } from "@/helpers";
 import { useAuthStore } from "@/stores/auth";
+import { getById, resolveNpsItem } from "@/api/nps";
 
 const authStore = useAuthStore();
 const props = defineProps<{
@@ -19,8 +21,51 @@ const { closeSignInModal } = authStore;
 
 const router = useRouter();
 const searchStore = useSearchStore();
+const visitsStore = useVisitsStore();
 
-const result = computed(() => searchStore.findById(props.id));
+const fetched = ref<NpsResult | null>(null);
+const loadingItem = ref(false);
+
+const result = computed(() => {
+  return (
+    searchStore.findById(props.id) ||
+    visitsStore.visitedItems.find((item) => item.id === props.id)?.result ||
+    fetched.value ||
+    undefined
+  );
+});
+
+watch(
+  () => [props.id, props.category] as const,
+  async ([id, category]) => {
+    fetched.value = null;
+    if (searchStore.findById(id)) return;
+    const fromLog = visitsStore.visitedItems.find((item) => item.id === id);
+    if (fromLog?.result) {
+      searchStore.cacheResults([fromLog.result]);
+      return;
+    }
+
+    loadingItem.value = true;
+    try {
+      const direct = await getById(category, id);
+      if (direct) {
+        fetched.value = direct;
+        searchStore.cacheResults([direct]);
+        return;
+      }
+      const resolved = await resolveNpsItem(id, category);
+      if (resolved) {
+        fetched.value = resolved.result;
+        searchStore.cacheResults([resolved.result]);
+      }
+    } finally {
+      loadingItem.value = false;
+    }
+  },
+  { immediate: true },
+);
+
 const image = computed(() => pickCardImage(result.value?.images));
 const imageSrc = computed(() => image.value?.url || missingImage);
 const title = computed(
@@ -28,7 +73,7 @@ const title = computed(
     result.value?.fullName ||
     result.value?.title ||
     result.value?.name ||
-    "Unknown",
+    (loadingItem.value ? "Loading…" : "Unknown"),
 );
 const mediaFailed = ref(false);
 const displaySrc = computed(() =>

@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { buildParkCodeParams, buildNpsSearchParams } from '@/api/searchParams'
+import {
+  buildParkCodeParams,
+  buildNpsSearchParams,
+  buildIdParams,
+  normalizeNpsId,
+} from '@/api/searchParams'
 
 describe('buildNpsSearchParams', () => {
   it('trims the query and sets a limit', () => {
@@ -20,5 +25,14 @@ describe('buildParkCodeParams', () => {
     const params = buildParkCodeParams('romo')
     expect(params.get('parkCode')).toBe('romo')
     expect(params.get('limit')).toBe('1')
+  })
+})
+
+describe('normalizeNpsId / buildIdParams', () => {
+  it('uppercases UUIDs for the NPS id filter', () => {
+    const id = '77e0d7f0-1942-494a-ace2-9004d2bdc59e'
+    expect(normalizeNpsId(id)).toBe('77E0D7F0-1942-494A-ACE2-9004D2BDC59E')
+    const params = buildIdParams([id])
+    expect(params.get('id')).toBe('77E0D7F0-1942-494A-ACE2-9004D2BDC59E')
   })
 })

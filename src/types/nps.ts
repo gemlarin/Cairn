@@ -86,6 +86,8 @@ export type VisitRow = {
   id: string;
   user_id: string;
   item_id: string;
+  /** NPS search category — needed to re-fetch details later. */
+  category: AvailableSearchCategories | null;
   visited: boolean;
   note: string | null;
   saved_on: string | null;
@@ -101,6 +103,7 @@ export type VisitNote = {
 
 export type VisitUpsert = {
   item_id: string;
+  category?: AvailableSearchCategories | null;
   visited?: boolean;
   note?: string | null;
   saved_on?: string | null;
@@ -110,6 +113,8 @@ export type AvailableSearchCategories =
   (typeof AVAILABLE_SEARCH_CATEGORIES)[keyof typeof AVAILABLE_SEARCH_CATEGORIES];
 
 export const DEFAULT_LIMIT = 20;
+/** Page size for search results and Field Log lists. */
+export const RESULTS_PER_PAGE = 12;
 export const DEFAULT_SEARCH_CATEGORY = AVAILABLE_SEARCH_CATEGORIES.PARKS;
 export const DEFAULT_NATIONAL_PARK_LABEL = "National Park";
 export const DEFAULT_TOUR_LABEL = "Tour";
@@ -143,5 +148,22 @@ export const DEFAULT_CONFIRM_EMAIL_MESSAGE =
 export const DEFAULT_EMAIL_NOT_CONFIRMED =
   "Confirm your email before signing in. Check your inbox for the link.";
 export const DEFAULT_SAVE_ERROR = "Failed to save. Please try again.";
+export const DEFAULT_FETCH_ERROR = "Failed to load data.";
+
+export const FIELD_LOG_LOADING = "Loading your log…";
+export const FIELD_LOG_EMPTY_TITLE = "No parks logged yet.";
+export const FIELD_LOG_EMPTY_MESSAGE =
+  "Open a park and mark it visited to begin your log.";
+export const FIELD_LOG_SEARCH_PARKS = "Search parks";
+export const FIELD_LOG_PLACE_SINGULAR = "place";
+export const FIELD_LOG_PLACE_PLURAL = "places";
+export const FIELD_LOG_VISITED_SUFFIX = "visited";
+export const FIELD_LOG_NO_NOTES = "No notes written.";
+
+export const RESULTS_FOR_LABEL = "RESULTS FOR";
+export const RESULTS_EMPTY_PREFIX = "No results found for";
+export const RESULTS_PROMPT =
+  "Search parks, tours, and things to do across the United States.";
+export const RESULTS_PROMPT_HINT = 'Try "Yosemite," "Alaska," or "canyon."';
 
 export type Mode = typeof MODE_SIGN_IN | typeof MODE_CREATE_ACCOUNT;

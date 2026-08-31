@@ -2,10 +2,11 @@
 import { computed, ref, watch } from "vue";
 import { useSearchStore } from "@/stores/search";
 import { useResultDetails } from "@/composables/useResultDetails";
-import type { AvailableSearchCategories } from "@/types/nps";
+import type { AvailableSearchCategories, NpsResult } from "@/types/nps";
 import { useAuthStore } from "@/stores/auth";
 import { useVisitsStore } from "@/stores/visits";
 import { storeToRefs } from "pinia";
+import { getById, resolveNpsItem } from "@/api/nps";
 
 const authStore = useAuthStore();
 const visitsStore = useVisitsStore();
@@ -20,7 +21,42 @@ const props = defineProps<{
   id: string;
 }>();
 
-const result = computed(() => searchStore.findById(props.id));
+const fetched = ref<NpsResult | null>(null);
+
+const result = computed(() => {
+  return (
+    searchStore.findById(props.id) ||
+    visitsStore.visitedItems.find((item) => item.id === props.id)?.result ||
+    fetched.value ||
+    undefined
+  );
+});
+
+watch(
+  () => [props.id, props.category] as const,
+  async ([id, category]) => {
+    fetched.value = null;
+    if (searchStore.findById(id)) return;
+    const fromLog = visitsStore.visitedItems.find((item) => item.id === id);
+    if (fromLog?.result) {
+      searchStore.cacheResults([fromLog.result]);
+      return;
+    }
+    const direct = await getById(category, id);
+    if (direct) {
+      fetched.value = direct;
+      searchStore.cacheResults([direct]);
+      return;
+    }
+    const resolved = await resolveNpsItem(id, category);
+    if (resolved) {
+      fetched.value = resolved.result;
+      searchStore.cacheResults([resolved.result]);
+    }
+  },
+  { immediate: true },
+);
+
 const details = useResultDetails(result, () => props.category);
 
 const draft = ref("");
@@ -85,7 +121,7 @@ const handleVisitToggle = async () => {
     if (isVisited(props.id)) {
       await removeVisited(props.id);
     } else {
-      await addVisited(props.id);
+      await addVisited(props.id, props.category);
     }
   } catch {
     // visitError set in the store
