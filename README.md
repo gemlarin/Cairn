@@ -58,5 +58,5 @@ These use the `VITE_` prefix on purpose — they are public client config. Do **
 - [x] Sign-in modal/drawer
 - [x] ParkCard marker when item has notes (visited badge already exists)
 - [x] Save/delete error handling — fail: keep note / keep Save enabled for retry; show error; mutate UI only on success
-- [ ] Pagination — 20 results per page (NPS `limit` / `start`)
-- [ ] My log page — list all visited places and notes in one place (signed-in)
+- [x] Pagination — 20 results per page (NPS `limit` / `start`)
+- [x] Field Log — list all visited places and notes in one place (signed-in)
