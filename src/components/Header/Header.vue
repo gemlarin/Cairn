@@ -62,8 +62,12 @@ const { signout } = authStore;
         v-if="route.name == 'fieldlog'"
         to="/"
         class="text-xs font-medium cursor-pointer text-accent underline-offset-2 hover:underline transition-colors flex items-center gap-1 py-2"
-        ><img :src="BackArrow" class="size-4 text-accent" alt="" aria-hidden="true" />Search
-        parks</RouterLink
+        ><img
+          :src="BackArrow"
+          class="size-4 text-accent"
+          alt=""
+          aria-hidden="true"
+        />Search parks</RouterLink
       >
       <span v-if="isSignedIn" class="text-accent" aria-hidden="true">|</span>
       <span

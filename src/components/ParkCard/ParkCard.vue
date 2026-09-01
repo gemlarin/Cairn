@@ -109,7 +109,7 @@ function onImageError() {
       >
         {{ details.label }}&ensp;·&ensp;{{ details.states }}
       </p>
-      <h3 class="font-serif text-[1.05rem] text-foreground leading-snug">
+      <h3 class="font-serif text-[1.2rem] text-foreground leading-snug">
         {{ details.title }}
       </h3>
     </div>
