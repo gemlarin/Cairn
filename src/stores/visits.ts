@@ -3,7 +3,7 @@ import { nextTick } from "vue";
 import { defineStore } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 import { supabase } from "@/lib/supabase";
-import { getByIds, resolveNpsItem } from "@/api/nps";
+import { getByIds } from "@/api/nps";
 import { useSearchStore } from "@/stores/search";
 import {
   type VisitRow,
@@ -25,33 +25,44 @@ export type VisitedItem = {
   savedOn: number | null;
 };
 
+/** Prefer auth store session — avoids auth.getUser() on every write. */
+export function requireUserId(): string {
+  const userId = useAuthStore().user?.id;
+  if (!userId) throw new Error("Require User ID: Not signed in");
+  return userId;
+}
+
+/**
+ * Single upsert per write. Merges unspecified fields from the Pinia store
+ * (already loaded via loadFromSupabase) so we do not SELECT-before-upsert.
+ */
 export async function upsertVisit(partial: VisitUpsert): Promise<VisitRow> {
-  const userId = await requireUserId();
-  // 1. Load existing row (if any) so we can merge
-  const { data: existing, error: existingError } = await supabase
-    .from("visits")
-    .select("*")
-    .eq("user_id", userId)
-    .eq("item_id", partial.item_id)
-    .maybeSingle();
-  if (existingError) throw existingError;
-  // 2. Merge: only overwrite fields you passed in
+  const userId = requireUserId();
+  const visitsStore = useVisitsStore();
+  const existingNote = visitsStore.notes.find(
+    (entry) => entry.id === partial.item_id,
+  );
+
   const row = {
     user_id: userId,
     item_id: partial.item_id,
     category:
       partial.category !== undefined
         ? partial.category
-        : (existing?.category ?? null),
-    visited: partial.visited ?? existing?.visited ?? false,
-    note: partial.note !== undefined ? partial.note : (existing?.note ?? null),
+        : (visitsStore.categories[partial.item_id] ?? null),
+    visited:
+      partial.visited ?? visitsStore.visited.includes(partial.item_id),
+    note:
+      partial.note !== undefined ? partial.note : (existingNote?.note ?? null),
     saved_on:
       partial.saved_on !== undefined
         ? partial.saved_on
-        : (existing?.saved_on ?? null),
+        : existingNote?.savedOn != null
+          ? new Date(existingNote.savedOn).toISOString()
+          : null,
     updated_at: new Date().toISOString(),
   };
-  // 3. Insert or update on unique (user_id, item_id)
+
   const { data, error } = await supabase
     .from("visits")
     .upsert(row, { onConflict: "user_id,item_id" })
@@ -61,20 +72,12 @@ export async function upsertVisit(partial: VisitUpsert): Promise<VisitRow> {
   return data;
 }
 
-export async function requireUserId(): Promise<string> {
-  const { data, error } = await supabase.auth.getUser();
-  if (error) throw new Error(`Require User ID: ${error.message}`);
-  const userId = data.user?.id;
-  if (!userId) throw new Error("Require User ID: Not signed in");
-  return userId;
-}
-
 export async function fetchVisits(): Promise<VisitRow[]> {
   const visitsStore = useVisitsStore();
   visitsStore.loading = true;
   visitsStore.fetchError = null;
   try {
-    const userId = await requireUserId();
+    const userId = requireUserId();
     const { data, error } = await supabase
       .from("visits")
       .select("*")
@@ -281,21 +284,25 @@ export const useVisitsStore = defineStore("visits", {
           }),
         );
 
-        const stillMissing = [...withoutCategory, ...ids].filter(
-          (id) => !lookupResult(id),
+        // Uncategorized leftovers: one parks batch (most common). No per-id
+        // resolveNpsItem and no hydration upserts — category is written on visit.
+        const stillMissing = withoutCategory.filter((id) => !lookupResult(id));
+        if (stillMissing.length === 0) return;
+
+        const results = await getByIds(
+          AVAILABLE_SEARCH_CATEGORIES.PARKS,
+          stillMissing,
         );
-        await Promise.all(
-          stillMissing.map(async (id) => {
-            const resolved = await resolveNpsItem(id, categoryById[id] ?? null);
-            if (!resolved) return;
-            setResult(id, resolved.result, resolved.category);
-            void upsertVisit({
-              item_id: id,
-              category: resolved.category,
-              visited: true,
-            }).catch(() => {});
-          }),
-        );
+        for (const id of stillMissing) {
+          const result = results.find(
+            (row) =>
+              row.id?.toLowerCase() === id.toLowerCase() ||
+              row.parkCode?.toLowerCase() === id.toLowerCase(),
+          );
+          if (result) {
+            setResult(id, result, AVAILABLE_SEARCH_CATEGORIES.PARKS);
+          }
+        }
       };
 
       this.detailsLoading = true;

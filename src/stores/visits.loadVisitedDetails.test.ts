@@ -2,27 +2,19 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
 import { useVisitsStore } from "@/stores/visits";
 import { useSearchStore } from "@/stores/search";
-import { getByIds, resolveNpsItem } from "@/api/nps";
+import { getByIds } from "@/api/nps";
 import { AVAILABLE_SEARCH_CATEGORIES } from "@/types/nps";
+import { supabase } from "@/lib/supabase";
 
 vi.mock("@/api/nps", () => ({
   getByIds: vi.fn(),
-  resolveNpsItem: vi.fn(),
 }));
 
 vi.mock("@/lib/supabase", () => ({
   supabase: {
-    auth: {
-      getUser: vi.fn().mockResolvedValue({
-        data: { user: { id: "user-1" } },
-        error: null,
-      }),
-    },
     from: vi.fn(() => ({
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
       upsert: vi.fn().mockReturnThis(),
+      select: vi.fn().mockReturnThis(),
       single: vi.fn().mockResolvedValue({ data: {}, error: null }),
     })),
   },
@@ -52,7 +44,7 @@ describe("visitsStore.loadVisitedDetails", () => {
     await visitsStore.loadVisitedDetails();
 
     expect(getByIds).not.toHaveBeenCalled();
-    expect(resolveNpsItem).not.toHaveBeenCalled();
+    expect(supabase.from).not.toHaveBeenCalled();
     expect(visitsStore.visitedItems[0]?.result?.fullName).toBe("Cached Park");
     expect(visitsStore.detailsLoading).toBe(false);
   });
@@ -80,8 +72,33 @@ describe("visitsStore.loadVisitedDetails", () => {
     expect(getByIds).toHaveBeenCalledWith(AVAILABLE_SEARCH_CATEGORIES.PARKS, [
       "fresh",
     ]);
+    expect(supabase.from).not.toHaveBeenCalled();
     expect(visitsStore.visitedItems.map((item) => item.result?.fullName)).toEqual(
       ["Already Here", "From NPS"],
+    );
+  });
+
+  it("batches uncategorized ids as parks without hydration upserts", async () => {
+    const visitsStore = useVisitsStore();
+
+    visitsStore.visited = ["uncat-1", "uncat-2"];
+    visitsStore.categories = {};
+
+    vi.mocked(getByIds).mockResolvedValue([
+      { id: "uncat-1", fullName: "Park One", parkCode: "p1" },
+      { id: "uncat-2", fullName: "Park Two", parkCode: "p2" },
+    ]);
+
+    await visitsStore.loadVisitedDetails();
+
+    expect(getByIds).toHaveBeenCalledTimes(1);
+    expect(getByIds).toHaveBeenCalledWith(AVAILABLE_SEARCH_CATEGORIES.PARKS, [
+      "uncat-1",
+      "uncat-2",
+    ]);
+    expect(supabase.from).not.toHaveBeenCalled();
+    expect(visitsStore.visitedItems.map((item) => item.result?.fullName)).toEqual(
+      ["Park One", "Park Two"],
     );
   });
 });
