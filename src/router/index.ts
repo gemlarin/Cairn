@@ -44,8 +44,9 @@ export const router = createRouter({
   },
 });
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const authStore = useAuthStore();
+  await authStore.waitUntilReady();
   if (to.meta.requiresAuth && !authStore.isSignedIn) {
     authStore.openSignInModal(); // optional: prompt sign-in
     return { name: "search" }; // or return false to cancel

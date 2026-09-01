@@ -1,11 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/nps/(.*)",
-      "destination": "/api/nps/$1"
+      "source": "/nps/:path*",
+      "destination": "/api/nps/:path*"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api/|nps/).*)",
       "destination": "/index.html"
     }
   ]

@@ -14,11 +14,19 @@ function toAuthUser(user: User): AuthUser {
   };
 }
 
+/** Resolved once the first auth session event has been applied. */
+let resolveAuthReady: (() => void) | null = null;
+const authReadyPromise = new Promise<void>((resolve) => {
+  resolveAuthReady = resolve;
+});
+
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     isSignedIn: false,
     user: null as AuthUser | null,
     isOpenSignInModal: false,
+    /** False until the first onAuthStateChange (INITIAL_SESSION) settles. */
+    authReady: false,
   }),
   actions: {
     init() {
@@ -28,8 +36,17 @@ export const useAuthStore = defineStore("auth", {
         // Defer so we never update Pinia synchronously inside the auth lock
         setTimeout(() => {
           this.setSessionUser(session?.user ?? null);
+          if (!this.authReady) {
+            this.authReady = true;
+            resolveAuthReady?.();
+          }
         }, 0);
       });
+    },
+    /** Router guards wait here so refresh does not treat a restoring session as signed out. */
+    waitUntilReady(): Promise<void> {
+      if (this.authReady) return Promise.resolve();
+      return authReadyPromise;
     },
     setSessionUser(user: User | null) {
       const prevId = this.user?.id ?? null;
