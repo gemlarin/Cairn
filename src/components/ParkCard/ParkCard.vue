@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { RouterLink } from "vue-router";
 import missingImage from "@/assets/missing.png";
 import { useResultDetails } from "@/composables/useResultDetails";
-import type { AvailableSearchCategories, NpsResult } from "@/types/nps";
+import {
+  PARK_CARD_HAS_NOTES,
+  PARK_CARD_VISITED,
+  type AvailableSearchCategories,
+  type NpsResult,
+} from "@/types/nps";
 import { useVisitsStore } from "@/stores/visits";
 import { pickCardImage } from "@/helpers";
 
@@ -13,7 +18,6 @@ const props = defineProps<{
   category: AvailableSearchCategories;
 }>();
 
-const router = useRouter();
 const image = computed(() => pickCardImage(props.result.images));
 const imageSrc = computed(() => image.value?.url || missingImage);
 const mediaFailed = ref(false);
@@ -27,6 +31,22 @@ const details = useResultDetails(
 const id = computed(() => props.result.id || props.result.parkCode);
 const hasVisited = computed(() => visitsStore.isVisited(id.value!));
 const hasAddedNote = computed(() => visitsStore.hasAddedNote(id.value!));
+
+const linkLabel = computed(() => {
+  const parts = [details.value.title || "Untitled"];
+  if (hasVisited.value) parts.push(PARK_CARD_VISITED);
+  if (hasAddedNote.value) parts.push(PARK_CARD_HAS_NOTES);
+  return parts.join(", ");
+});
+
+const detailTo = computed(() => ({
+  name: "detail" as const,
+  params: {
+    category: props.category,
+    id: id.value!,
+  },
+}));
+
 watch(imageSrc, () => {
   mediaFailed.value = false;
 });
@@ -34,34 +54,14 @@ watch(imageSrc, () => {
 function onImageError() {
   mediaFailed.value = true;
 }
-
-function openDetail() {
-  if (!id.value) return;
-  router.push({
-    name: "detail",
-    params: {
-      category: props.category,
-      id: id.value,
-    },
-  });
-}
-
-function onKeydown(event: KeyboardEvent) {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault();
-    openDetail();
-  }
-}
 </script>
 
 <template>
-  <div
-    role="link"
-    tabindex="0"
-    :aria-label="details.title"
-    class="group w-full cursor-pointer text-left border border-border hover:border-foreground/40 transition-colors bg-card"
-    @click="openDetail"
-    @keydown="onKeydown"
+  <RouterLink
+    v-if="id"
+    :to="detailTo"
+    :aria-label="linkLabel"
+    class="group block w-full no-underline text-inherit cursor-pointer text-left border border-border hover:border-foreground/40 transition-colors bg-card"
   >
     <div class="park-card-media-wrap">
       <div class="park-card-media bg-muted">
@@ -95,6 +95,7 @@ function onKeydown(event: KeyboardEvent) {
           viewBox="0 -960 960 960"
           width="25px"
           fill="#FFFFFF"
+          aria-hidden="true"
         >
           <path
             d="M200-200h360v-200h200v-360H200v560Zm0 80q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v400L600-120H200Zm80-280v-80h200v80H280Zm0-160v-80h400v80H280Zm-80 360v-560 560Z"
@@ -104,7 +105,7 @@ function onKeydown(event: KeyboardEvent) {
     </div>
     <div class="px-4 py-3.5">
       <p
-        class="text-[9px] uppercase tracking-[0.16em] text-muted-foreground mb-1 font-sans"
+        class="text-[11px] uppercase tracking-[0.16em] text-muted-foreground mb-1 font-sans"
       >
         {{ details.label }}&ensp;·&ensp;{{ details.states }}
       </p>
@@ -112,7 +113,7 @@ function onKeydown(event: KeyboardEvent) {
         {{ details.title }}
       </h3>
     </div>
-  </div>
+  </RouterLink>
 </template>
 
 <style scoped>

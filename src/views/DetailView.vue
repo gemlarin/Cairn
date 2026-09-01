@@ -6,7 +6,11 @@ import missingImage from "@/assets/missing.png";
 import { useSearchStore } from "@/stores/search";
 import { useVisitsStore } from "@/stores/visits";
 import Details from "@/components/Details/Details.vue";
-import type { AvailableSearchCategories, NpsResult } from "@/types/nps";
+import {
+  APP_TITLE,
+  type AvailableSearchCategories,
+  type NpsResult,
+} from "@/types/nps";
 import { pickCardImage } from "@/helpers";
 import { useAuthStore } from "@/stores/auth";
 import { getById, resolveNpsItem } from "@/api/nps";
@@ -74,6 +78,17 @@ const title = computed(
     result.value?.title ||
     result.value?.name ||
     (loadingItem.value ? "Loading…" : "Unknown"),
+);
+
+watch(
+  title,
+  (next) => {
+    document.title =
+      next && next !== "Loading…" && next !== "Unknown"
+        ? `${next} — ${APP_TITLE}`
+        : APP_TITLE;
+  },
+  { immediate: true },
 );
 const mediaFailed = ref(false);
 const displaySrc = computed(() =>

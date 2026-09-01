@@ -128,13 +128,6 @@ const handleVisitToggle = async () => {
   }
 };
 
-/** Focus: prompt sign-in only. Do not toggle visited (click already does). */
-const handleVisitFocus = () => {
-  if (!isSignedIn.value) {
-    openSignInModal();
-  }
-};
-
 const handleNoteInteract = () => {
   if (!isSignedIn.value) {
     openSignInModal();
@@ -188,7 +181,6 @@ const handleSaveNote = async () => {
             type="button"
             v-if="category !== 'people'"
             @click="handleVisitToggle"
-            @focus="handleVisitFocus"
             class="flex items-center gap-3 group min-h-11 cursor-pointer group"
             :aria-label="
               isVisited(props.id) ? 'Unmark visited' : 'Mark as visited'
@@ -239,6 +231,7 @@ const handleSaveNote = async () => {
         </div>
         <div
           v-if="visitError"
+          role="alert"
           class="w-full text-[0.625rem] text-red-500 text-left"
         >
           {{ visitError }}
@@ -261,11 +254,10 @@ const handleSaveNote = async () => {
           <textarea
             :readonly="!isSignedIn"
             @click="handleNoteInteract"
-            @focus="handleNoteInteract"
             v-model="draft"
             placeholder="What did you see? What do you want to remember?"
             :rows="6"
-            class="w-full border border-border bg-transparent px-3.5 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground transition-colors resize-none font-mono leading-relaxed"
+            class="w-full border border-border bg-transparent px-3.5 py-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:border-foreground transition-colors resize-none font-mono leading-relaxed"
           />
           <div
             v-if="savingNote"
@@ -276,7 +268,11 @@ const handleSaveNote = async () => {
             ></div>
           </div>
         </div>
-        <p v-if="noteError" class="mt-2 text-[0.625rem] text-red-500 text-left">
+        <p
+          v-if="noteError"
+          role="alert"
+          class="mt-2 text-[0.625rem] text-red-500 text-left"
+        >
           {{ noteError }}
         </p>
         <div class="flex items-center justify-between mt-3">

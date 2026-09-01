@@ -15,6 +15,9 @@ describe("Pagination", () => {
       props: { page: 1, totalPages: 3 },
     });
     expect(wrapper.text()).toContain("Page 1 of 3");
+    expect(wrapper.get('[aria-current="page"]').text()).toContain(
+      "Page 1 of 3",
+    );
     expect(
       wrapper.get('button[aria-label="Previous page"]').attributes("disabled"),
     ).toBeDefined();

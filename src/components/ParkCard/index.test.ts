@@ -3,14 +3,29 @@ import { describe, it, expect } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
 import { createMemoryHistory, createRouter } from "vue-router";
 import ParkCard from "./ParkCard.vue";
-import { AVAILABLE_SEARCH_CATEGORIES, type NpsResult } from "@/types/nps";
+import {
+  AVAILABLE_SEARCH_CATEGORIES,
+  PARK_CARD_HAS_NOTES,
+  PARK_CARD_VISITED,
+  type NpsResult,
+} from "@/types/nps";
+import { useVisitsStore } from "@/stores/visits";
 
-function mountCard(props: {
-  result: NpsResult;
-  category: (typeof AVAILABLE_SEARCH_CATEGORIES)[keyof typeof AVAILABLE_SEARCH_CATEGORIES];
-}) {
+function mountCard(
+  props: {
+    result: NpsResult;
+    category: (typeof AVAILABLE_SEARCH_CATEGORIES)[keyof typeof AVAILABLE_SEARCH_CATEGORIES];
+  },
+  visitState?: { visited?: string[]; notes?: { id: string; note: string; savedOn: number }[] },
+) {
   const pinia = createPinia();
   setActivePinia(pinia);
+
+  if (visitState) {
+    const visitsStore = useVisitsStore();
+    visitsStore.visited = visitState.visited ?? [];
+    visitsStore.notes = visitState.notes ?? [];
+  }
 
   const router = createRouter({
     history: createMemoryHistory(),
@@ -173,5 +188,22 @@ describe("ParkCard", () => {
     expect(wrapper.text()).toContain("Scotts Bluff National Monument");
     expect(wrapper.text()).toContain("NE");
     expect(wrapper.text()).toContain("Assistance on the Trail");
+  });
+
+  it("includes visit and note status in the accessible name", () => {
+    const wrapper = mountCard(
+      {
+        result: nationalPark,
+        category: AVAILABLE_SEARCH_CATEGORIES.PARKS,
+      },
+      {
+        visited: ["123"],
+        notes: [{ id: "123", note: "Great hike", savedOn: Date.now() }],
+      },
+    );
+
+    expect(wrapper.get("a").attributes("aria-label")).toBe(
+      `Yosemite National Park, ${PARK_CARD_VISITED}, ${PARK_CARD_HAS_NOTES}`,
+    );
   });
 });

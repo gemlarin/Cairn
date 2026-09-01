@@ -36,7 +36,13 @@ onMounted(async () => {
   }
 });
 
-const isBusy = computed(() => loading.value || detailsLoading.value);
+/** Full-page spinner only when there is nothing to show yet. */
+const showInitialLoading = computed(
+  () =>
+    (loading.value || detailsLoading.value) &&
+    visitedItems.value.length === 0 &&
+    !fetchError.value,
+);
 
 const totalPages = computed(() =>
   Math.max(1, Math.ceil(visitedItems.value.length / RESULTS_PER_PAGE)),
@@ -104,23 +110,34 @@ function onImageError(event: Event) {
     <Header />
 
     <div class="p-5 py-10 pb-24">
-      <span v-if="isBusy" class="flex items-center justify-center gap-2">
-        <p
-          v-if="isBusy"
-          class="text-sm text-muted-foreground text-center py-20"
-        >
+      <div
+        v-if="showInitialLoading"
+        class="flex items-center justify-center gap-2"
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+      >
+        <p class="text-sm text-muted-foreground text-center py-20">
           {{ FIELD_LOG_LOADING }}
         </p>
         <div
           class="w-8 h-8 border-4 border-ring border-t-transparent rounded-full animate-spin"
+          aria-hidden="true"
         />
-      </span>
+      </div>
 
-      <p v-else-if="fetchError" class="text-sm text-accent text-center py-10">
+      <p
+        v-else-if="fetchError && visitedItems.length === 0"
+        role="alert"
+        class="text-sm text-accent text-center py-10"
+      >
         {{ fetchError }}
       </p>
 
-      <div v-else-if="visitedItems.length === 0" class="text-center py-24">
+      <div
+        v-else-if="!loading && !detailsLoading && visitedItems.length === 0"
+        class="text-center py-24"
+      >
         <p class="font-serif text-2xl text-foreground mb-3 leading-snug">
           {{ FIELD_LOG_EMPTY_TITLE }}
         </p>
@@ -136,9 +153,32 @@ function onImageError(event: Event) {
         </button>
       </div>
 
-      <template v-else>
+      <template v-else-if="visitedItems.length > 0">
+        <div
+          v-if="detailsLoading"
+          class="flex items-center gap-2 mb-6"
+          role="status"
+          aria-live="polite"
+        >
+          <div
+            class="w-4 h-4 border-2 border-ring border-t-transparent rounded-full animate-spin"
+            aria-hidden="true"
+          />
+          <p class="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+            {{ FIELD_LOG_LOADING }}
+          </p>
+        </div>
+
         <p
-          class="text-[9px] uppercase tracking-[0.16em] text-muted-foreground mb-8"
+          v-if="fetchError"
+          role="alert"
+          class="text-sm text-accent mb-4"
+        >
+          {{ fetchError }}
+        </p>
+
+        <p
+          class="text-[11px] uppercase tracking-[0.16em] text-muted-foreground mb-8"
         >
           {{ visitedItems.length }}
           {{
@@ -172,13 +212,13 @@ function onImageError(event: Event) {
               <div class="flex-1 min-w-0">
                 <div class="flex items-start justify-between gap-3 mb-1.5">
                   <p
-                    class="text-[9px] uppercase tracking-[0.15em] text-muted-foreground"
+                    class="text-[11px] uppercase tracking-[0.15em] text-muted-foreground"
                   >
                     {{ itemLocation(item) }}
                   </p>
                   <p
                     v-if="formatSavedOn(item.savedOn)"
-                    class="text-[9px] uppercase tracking-[0.12em] text-muted-foreground shrink-0"
+                    class="text-[11px] uppercase tracking-[0.12em] text-muted-foreground shrink-0"
                   >
                     {{ formatSavedOn(item.savedOn) }}
                   </p>
@@ -198,7 +238,7 @@ function onImageError(event: Event) {
                 </p>
                 <p
                   v-else
-                  class="text-xs text-muted-foreground/40 italic font-sans"
+                  class="text-xs text-muted-foreground/70 italic font-sans"
                 >
                   {{ FIELD_LOG_NO_NOTES }}
                 </p>

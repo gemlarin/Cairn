@@ -10,6 +10,7 @@ import {
   RESULTS_PROMPT_HINT,
   RESULTS_EMPTY_PREFIX,
   RESULTS_FOR_LABEL,
+  RESULTS_LOADING,
   type NpsResult,
 } from "@/types/nps";
 
@@ -106,5 +107,13 @@ describe("Results", () => {
       RESULTS_PER_PAGE,
     );
     expect(wrapper.findComponent({ name: "Pagination" }).exists()).toBe(true);
+  });
+
+  it("announces loading in a live region", () => {
+    const wrapper = mountResults({ loading: true, searched: true });
+    const region = wrapper.get("#results-area");
+    expect(region.attributes("aria-busy")).toBe("true");
+    expect(region.attributes("aria-live")).toBe("polite");
+    expect(wrapper.text()).toContain(RESULTS_LOADING);
   });
 });

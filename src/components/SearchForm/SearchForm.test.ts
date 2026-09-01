@@ -5,6 +5,7 @@ import {
   AVAILABLE_SEARCH_CATEGORIES,
   DEFAULT_LIMIT,
   DEFAULT_SEARCH_CATEGORY,
+  SEARCH_INPUT_LABEL,
 } from "@/types/nps";
 
 describe("SearchForm", () => {
@@ -55,5 +56,15 @@ describe("SearchForm", () => {
       DEFAULT_LIMIT,
       AVAILABLE_SEARCH_CATEGORIES.TOURS,
     ]);
+  });
+
+  it("associates an accessible label with the search input", () => {
+    const wrapper = mount(SearchForm, {
+      global: { stubs: { CategoryPopover: true } },
+    });
+    const input = wrapper.get(`#cairn-search-query`);
+    const label = wrapper.get(`label[for="cairn-search-query"]`);
+    expect(label.text()).toBe(SEARCH_INPUT_LABEL);
+    expect(input.attributes("placeholder")).toBe(SEARCH_INPUT_LABEL);
   });
 });

@@ -67,8 +67,8 @@ const selectedCategoryLabel = computed(() => {
       height="20px"
       viewBox="0 -960 960 960"
       width="16px"
-      fill="#7b6e60"
-      class="group-hover:fill-accent transition-colors relative right-0.5"
+      fill="currentColor"
+      class="text-muted-foreground group-hover:text-accent transition-colors relative right-0.5"
     >
       <path
         d="M480-346.85 253.85-573 291-610.15l189 189 189-189L706.15-573 480-346.85Z"

@@ -108,6 +108,19 @@ describe("FieldLogView", () => {
   it("shows loading state while busy", async () => {
     const { wrapper } = await mountFieldLog({ loading: true });
     expect(wrapper.text()).toContain(FIELD_LOG_LOADING);
+    const status = wrapper.get('[role="status"]');
+    expect(status.attributes("aria-live")).toBe("polite");
+    expect(status.attributes("aria-busy")).toBe("true");
+  });
+
+  it("shows the list while details are still loading", async () => {
+    const { wrapper } = await mountFieldLog({
+      detailsLoading: true,
+      visitedItems: [sampleItem()],
+    });
+    expect(wrapper.text()).toContain("Rocky Mountain National Park");
+    expect(wrapper.text()).toContain(FIELD_LOG_LOADING);
+    expect(wrapper.findAll("button.w-full").length).toBe(1);
   });
 
   it("shows empty state when there are no visits", async () => {

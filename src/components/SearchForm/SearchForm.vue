@@ -4,12 +4,14 @@ import {
   type AvailableSearchCategories,
   DEFAULT_SEARCH_CATEGORY,
   DEFAULT_LIMIT,
+  SEARCH_INPUT_LABEL,
 } from "@/types/nps";
 import searchIcon from "@/assets/search.svg";
 import CategoryPopover from "@/components/CategoryPopover/CategoryPopover.vue";
 const query = ref("");
 const limit = ref(DEFAULT_LIMIT);
 const category = ref<AvailableSearchCategories>(DEFAULT_SEARCH_CATEGORY);
+const searchInputId = "cairn-search-query";
 const emit = defineEmits<{
   "init-search": [
     searchTerm: string,
@@ -32,15 +34,25 @@ function onCategoryChange(newCategory: AvailableSearchCategories) {
     <div class="w-full max-w-[472px] flex flex-col">
       <form @submit.prevent="onSearch" class="mt-8 flex w-full">
         <div class="relative flex-1 max-w-[400px]">
+          <label :for="searchInputId" class="sr-only">{{
+            SEARCH_INPUT_LABEL
+          }}</label>
           <img
             :src="searchIcon"
             class="absolute size-4 left-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground"
-            alt="search"
+            alt=""
+            aria-hidden="true"
           />
           <input
+            :id="searchInputId"
             v-model="query"
-            placeholder="Search by name, state, or activity"
-            class="w-full border border-r-0 border-border bg-transparent pl-10 pr-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground transition-colors"
+            type="search"
+            name="q"
+            autocomplete="off"
+            autocorrect="off"
+            spellcheck="false"
+            :placeholder="SEARCH_INPUT_LABEL"
+            class="w-full border border-r-0 border-border bg-transparent pl-10 pr-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:border-foreground transition-colors"
           />
         </div>
         <button
@@ -64,7 +76,7 @@ function onCategoryChange(newCategory: AvailableSearchCategories) {
           >
           <input
             type="number"
-            class="ml-1 text-[0.7rem] uppercase pl-1 w-10 border border-transparent text-accent font-bold bg-transparent placeholder:text-muted-foreground focus:outline-none focus:border-foreground transition-colors"
+            class="ml-1 text-[0.7rem] uppercase pl-1 w-10 border border-transparent text-accent font-bold bg-transparent placeholder:text-muted-foreground focus-visible:border-foreground transition-colors"
             id="limit"
             name="limit"
             min="1"

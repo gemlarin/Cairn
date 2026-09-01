@@ -15,7 +15,8 @@
   --secondary: #e6dfcf;
   --secondary-foreground: #231f1a;
   --muted: #e6dfcf;
-  --muted-foreground: #7b6e60;
+  /* Darkened for WCAG AA on --background (#f3ede1); was #7b6e60 (~4.3:1). */
+  --muted-foreground: #5c5146;
   --accent: #b54020;
   --accent-foreground: #f3ede1;
   --destructive: #b54020;
@@ -55,7 +56,7 @@
   --secondary: #2e2924;
   --secondary-foreground: #ede6d6;
   --muted: #2e2924;
-  --muted-foreground: #9a8e80;
+  --muted-foreground: #c4b8a8;
   --accent: #c4522a;
   --accent-foreground: #ede6d6;
   --destructive: #c4522a;
@@ -125,7 +126,7 @@
 }
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
 
   body {
@@ -136,6 +137,56 @@
     margin: 0;
     padding: 0;
     min-height: 100%;
+  }
+
+  :focus {
+    outline: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Bordered fields use a border change, not a second outline ring. */
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
+    border-color: var(--foreground);
+  }
+
+  .skip-link {
+    position: absolute;
+    left: 0.75rem;
+    top: 0.75rem;
+    z-index: 100;
+    padding: 0.5rem 0.75rem;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-size: 0.875rem;
+    text-decoration: none;
+    transform: translateY(-200%);
+    transition: transform 0.15s ease;
+  }
+
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    transform: translateY(0);
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
   /**
   * Default typography styles for HTML elements (h1-h4, p, label, button, input).

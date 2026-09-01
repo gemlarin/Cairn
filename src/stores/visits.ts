@@ -1,4 +1,5 @@
 // visits store
+import { nextTick } from "vue";
 import { defineStore } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 import { supabase } from "@/lib/supabase";
@@ -13,6 +14,7 @@ import {
   AVAILABLE_SEARCH_CATEGORIES,
   DEFAULT_SAVE_ERROR,
   DEFAULT_FETCH_ERROR,
+  RESULTS_PER_PAGE,
 } from "@/types/nps";
 
 export type VisitedItem = {
@@ -167,8 +169,8 @@ export const useVisitsStore = defineStore("visits", {
     },
     /**
      * Load NPS details for every visited id.
-     * Uses stored category when present; probes all endpoints on miss
-     * (legacy rows without category).
+     * Seeds from itemCache / existing visitedItems first (immediate paint),
+     * fetches only missing ids, and hydrates the first page before the rest.
      */
     async loadVisitedDetails() {
       if (this.visited.length === 0) {
@@ -176,43 +178,99 @@ export const useVisitsStore = defineStore("visits", {
         return;
       }
 
-      this.detailsLoading = true;
-      this.fetchError = null;
-      try {
-        const resultsById = new Map<string, NpsResult>();
-        const categoryById = {
-          ...this.categories,
-        } as Record<string, AvailableSearchCategories>;
+      const searchStore = useSearchStore();
+      const resultsById = new Map<string, NpsResult>();
+      const categoryById = {
+        ...this.categories,
+      } as Record<string, AvailableSearchCategories>;
 
-        const setResult = (
-          id: string,
-          result: NpsResult,
-          category: AvailableSearchCategories,
-        ) => {
-          categoryById[id] = category;
-          this.categories[id] = category;
-          for (const key of [id, result.id, result.parkCode]) {
-            if (!key) continue;
-            resultsById.set(key, result);
-            resultsById.set(key.toLowerCase(), result);
-            resultsById.set(key.toUpperCase(), result);
-          }
-        };
+      const setResult = (
+        id: string,
+        result: NpsResult,
+        category: AvailableSearchCategories,
+      ) => {
+        categoryById[id] = category;
+        this.categories[id] = category;
+        resultsById.set(id, result);
+        for (const key of [result.id, result.parkCode]) {
+          if (!key) continue;
+          resultsById.set(key, result);
+          resultsById.set(key.toLowerCase(), result);
+          resultsById.set(key.toUpperCase(), result);
+        }
+      };
 
-        // 1) Batch fetch by known category
+      const lookupResult = (id: string) =>
+        resultsById.get(id) ??
+        resultsById.get(id.toLowerCase()) ??
+        resultsById.get(id.toUpperCase()) ??
+        null;
+
+      const paintVisitedItems = () => {
+        this.visitedItems = this.visited.map((id) => {
+          const noteEntry = this.notes.find((note) => note.id === id);
+          const prev = this.visitedItems.find((item) => item.id === id);
+          return {
+            id,
+            category:
+              categoryById[id] ??
+              prev?.category ??
+              AVAILABLE_SEARCH_CATEGORIES.PARKS,
+            result: lookupResult(id) ?? prev?.result ?? null,
+            note: noteEntry?.note ?? null,
+            savedOn: noteEntry?.savedOn ?? null,
+          };
+        });
+      };
+
+      // Seed from prior Field Log rows + search/detail cache (no network).
+      for (const id of this.visited) {
+        if (lookupResult(id)) continue;
+        const prev = this.visitedItems.find((item) => item.id === id)?.result;
+        const cached = prev ?? searchStore.findById(id);
+        if (!cached) continue;
+        setResult(
+          id,
+          cached,
+          categoryById[id] ?? AVAILABLE_SEARCH_CATEGORIES.PARKS,
+        );
+      }
+      paintVisitedItems();
+
+      const missing = this.visited.filter((id) => !lookupResult(id));
+      if (missing.length === 0) {
+        searchStore.cacheResults(
+          this.visitedItems
+            .map((item) => item.result)
+            .filter((result): result is NpsResult => result != null),
+        );
+        return;
+      }
+
+      // Let the seeded list paint before NPS round-trips.
+      await nextTick();
+
+      const fetchIds = async (ids: string[]) => {
+        if (ids.length === 0) return;
+
         const byCategory = new Map<AvailableSearchCategories, string[]>();
-        for (const id of this.visited) {
+        const withoutCategory: string[] = [];
+
+        for (const id of ids) {
           const category = categoryById[id];
-          if (!category) continue;
+          if (!category) {
+            withoutCategory.push(id);
+            continue;
+          }
           const list = byCategory.get(category) ?? [];
           list.push(id);
           byCategory.set(category, list);
         }
 
         await Promise.all(
-          [...byCategory.entries()].map(async ([category, ids]) => {
-            const results = await getByIds(category, ids);
-            for (const id of ids) {
+          [...byCategory.entries()].map(async ([category, categoryIds]) => {
+            const results = await getByIds(category, categoryIds);
+            for (const id of categoryIds) {
               const result = results.find(
                 (row) =>
                   row.id?.toLowerCase() === id.toLowerCase() ||
@@ -223,14 +281,14 @@ export const useVisitsStore = defineStore("visits", {
           }),
         );
 
-        // 2) Probe all categories for anything still missing
-        const missing = this.visited.filter((id) => !resultsById.has(id));
+        const stillMissing = [...withoutCategory, ...ids].filter(
+          (id) => !lookupResult(id),
+        );
         await Promise.all(
-          missing.map(async (id) => {
+          stillMissing.map(async (id) => {
             const resolved = await resolveNpsItem(id, categoryById[id] ?? null);
             if (!resolved) return;
             setResult(id, resolved.result, resolved.category);
-            // Backfill category on legacy rows (best-effort)
             void upsertVisit({
               item_id: id,
               category: resolved.category,
@@ -238,27 +296,22 @@ export const useVisitsStore = defineStore("visits", {
             }).catch(() => {});
           }),
         );
+      };
 
-        this.visitedItems = this.visited.map((id) => {
-          const noteEntry = this.notes.find((note) => note.id === id);
-          const result =
-            resultsById.get(id) ??
-            resultsById.get(id.toLowerCase()) ??
-            resultsById.get(id.toUpperCase()) ??
-            null;
-          const category =
-            categoryById[id] ?? AVAILABLE_SEARCH_CATEGORIES.PARKS;
-          return {
-            id,
-            category,
-            result,
-            note: noteEntry?.note ?? null,
-            savedOn: noteEntry?.savedOn ?? null,
-          };
-        });
+      this.detailsLoading = true;
+      this.fetchError = null;
+      try {
+        const priority = missing.slice(0, RESULTS_PER_PAGE);
+        const deferred = missing.slice(RESULTS_PER_PAGE);
 
-        // So Detail view can resolve these without a prior search
-        const searchStore = useSearchStore();
+        await fetchIds(priority);
+        paintVisitedItems();
+
+        if (deferred.length > 0) {
+          await fetchIds(deferred);
+          paintVisitedItems();
+        }
+
         searchStore.cacheResults(
           this.visitedItems
             .map((item) => item.result)

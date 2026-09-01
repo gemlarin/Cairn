@@ -7,6 +7,7 @@ import {
   RESULTS_EMPTY_PREFIX,
   RESULTS_PROMPT,
   RESULTS_PROMPT_HINT,
+  RESULTS_LOADING,
 } from "@/types/nps";
 import ParkCard from "@/components/ParkCard/ParkCard.vue";
 import Pagination from "@/components/Pagination/Pagination.vue";
@@ -39,8 +40,14 @@ watch(
 );
 </script>
 <template>
-  <div id="results-area" class="mt-10 pb-20">
-    <div class="flex items-center justify-center">
+  <div
+    id="results-area"
+    class="mt-10 pb-20"
+    :aria-busy="loading"
+    aria-live="polite"
+  >
+    <p v-if="loading" class="sr-only">{{ RESULTS_LOADING }}</p>
+    <div class="flex items-center justify-center" aria-hidden="true">
       <div
         v-if="loading"
         class="w-8 h-8 border-4 border-ring border-t-transparent rounded-full animate-spin"
@@ -48,12 +55,17 @@ watch(
     </div>
     <p
       v-if="results.length > 0 && !loading"
-      class="results text-[9px] uppercase tracking-[0.16em] text-muted-foreground mb-6"
+      class="results text-[11px] uppercase tracking-[0.16em] text-muted-foreground mb-6"
     >
       {{ results.length }} {{ RESULTS_FOR_LABEL }}
       <span class="text-accent font-bold">"{{ term }}".</span>
     </p>
-    <p v-if="error" id="error" class="text-sm text-accent text-center py-12">
+    <p
+      v-if="error"
+      id="error"
+      role="alert"
+      class="text-sm text-accent text-center py-12"
+    >
       {{ error }}
     </p>
     <p
@@ -68,7 +80,7 @@ watch(
     >
       {{ RESULTS_PROMPT }}
       <br />
-      <span class="text-xs opacity-70">
+      <span class="text-xs opacity-80">
         {{ RESULTS_PROMPT_HINT }}
       </span>
     </p>

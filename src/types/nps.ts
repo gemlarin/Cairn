@@ -165,5 +165,13 @@ export const RESULTS_EMPTY_PREFIX = "No results found for";
 export const RESULTS_PROMPT =
   "Search parks, tours, and things to do across the United States.";
 export const RESULTS_PROMPT_HINT = 'Try "Yosemite," "Alaska," or "canyon."';
+export const RESULTS_LOADING = "Searching…";
+export const SEARCH_INPUT_LABEL = "Search by name, state, or activity";
+export const SKIP_TO_CONTENT = "Skip to content";
+export const PARK_CARD_VISITED = "visited";
+export const PARK_CARD_HAS_NOTES = "has notes";
+export const APP_TITLE = "Cairn";
+export const APP_TITLE_SEARCH = "Search — Cairn";
+export const APP_TITLE_FIELD_LOG = "Field Log — Cairn";
 
 export type Mode = typeof MODE_SIGN_IN | typeof MODE_CREATE_ACCOUNT;
