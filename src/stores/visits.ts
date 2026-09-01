@@ -284,23 +284,29 @@ export const useVisitsStore = defineStore("visits", {
           }),
         );
 
-        // Uncategorized leftovers: one parks batch (most common). No per-id
-        // resolveNpsItem and no hydration upserts — category is written on visit.
-        const stillMissing = withoutCategory.filter((id) => !lookupResult(id));
-        if (stillMissing.length === 0) return;
-
-        const results = await getByIds(
+        // Anything still unresolved: try other NPS categories in batches
+        // (≤1 call per category), not per-id resolve + upsert.
+        const resolveOrder = [
           AVAILABLE_SEARCH_CATEGORIES.PARKS,
-          stillMissing,
-        );
-        for (const id of stillMissing) {
-          const result = results.find(
-            (row) =>
-              row.id?.toLowerCase() === id.toLowerCase() ||
-              row.parkCode?.toLowerCase() === id.toLowerCase(),
+          ...Object.values(AVAILABLE_SEARCH_CATEGORIES).filter(
+            (category) => category !== AVAILABLE_SEARCH_CATEGORIES.PARKS,
+          ),
+        ];
+
+        for (const category of resolveOrder) {
+          const need = ids.filter(
+            (id) => !lookupResult(id) && categoryById[id] !== category,
           );
-          if (result) {
-            setResult(id, result, AVAILABLE_SEARCH_CATEGORIES.PARKS);
+          if (need.length === 0) continue;
+
+          const results = await getByIds(category, need);
+          for (const id of need) {
+            const result = results.find(
+              (row) =>
+                row.id?.toLowerCase() === id.toLowerCase() ||
+                row.parkCode?.toLowerCase() === id.toLowerCase(),
+            );
+            if (result) setResult(id, result, category);
           }
         }
       };

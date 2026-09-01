@@ -78,27 +78,60 @@ describe("visitsStore.loadVisitedDetails", () => {
     );
   });
 
-  it("batches uncategorized ids as parks without hydration upserts", async () => {
+  it("batches uncategorized ids across NPS categories without hydration upserts", async () => {
     const visitsStore = useVisitsStore();
 
-    visitsStore.visited = ["uncat-1", "uncat-2"];
+    visitsStore.visited = ["park-1", "camp-1"];
     visitsStore.categories = {};
 
-    vi.mocked(getByIds).mockResolvedValue([
-      { id: "uncat-1", fullName: "Park One", parkCode: "p1" },
-      { id: "uncat-2", fullName: "Park Two", parkCode: "p2" },
-    ]);
+    vi.mocked(getByIds).mockImplementation(async (category, ids) => {
+      if (
+        category === AVAILABLE_SEARCH_CATEGORIES.PARKS &&
+        ids.includes("park-1")
+      ) {
+        return [{ id: "park-1", fullName: "Park One", parkCode: "p1" }];
+      }
+      if (
+        category === AVAILABLE_SEARCH_CATEGORIES.CAMPGROUNDS &&
+        ids.includes("camp-1")
+      ) {
+        return [{ id: "camp-1", fullName: "Camp One", parkCode: "c1" }];
+      }
+      return [];
+    });
 
     await visitsStore.loadVisitedDetails();
 
-    expect(getByIds).toHaveBeenCalledTimes(1);
-    expect(getByIds).toHaveBeenCalledWith(AVAILABLE_SEARCH_CATEGORIES.PARKS, [
-      "uncat-1",
-      "uncat-2",
-    ]);
     expect(supabase.from).not.toHaveBeenCalled();
     expect(visitsStore.visitedItems.map((item) => item.result?.fullName)).toEqual(
-      ["Park One", "Park Two"],
+      ["Park One", "Camp One"],
+    );
+    expect(visitsStore.visitedItems[1]?.category).toBe(
+      AVAILABLE_SEARCH_CATEGORIES.CAMPGROUNDS,
+    );
+  });
+
+  it("retries other categories when the stored category misses", async () => {
+    const visitsStore = useVisitsStore();
+
+    visitsStore.visited = ["misfiled"];
+    visitsStore.categories = {
+      misfiled: AVAILABLE_SEARCH_CATEGORIES.PARKS,
+    };
+
+    vi.mocked(getByIds).mockImplementation(async (category) => {
+      if (category === AVAILABLE_SEARCH_CATEGORIES.PLACES) {
+        return [{ id: "misfiled", fullName: "Hidden Place", parkCode: "hp" }];
+      }
+      return [];
+    });
+
+    await visitsStore.loadVisitedDetails();
+
+    expect(supabase.from).not.toHaveBeenCalled();
+    expect(visitsStore.visitedItems[0]?.result?.fullName).toBe("Hidden Place");
+    expect(visitsStore.visitedItems[0]?.category).toBe(
+      AVAILABLE_SEARCH_CATEGORIES.PLACES,
     );
   });
 });
