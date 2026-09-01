@@ -21,15 +21,15 @@ const { signout } = authStore;
 </script>
 <template>
   <header
-    class="grid grid-cols-4 items-center justify-between pt-10 pb-8 border-b border-border pl-5 pr-5"
+    class="flex items-center justify-between gap-3 pt-10 pb-8 border-b border-border px-3 sm:px-5"
   >
-    <div class="logo col-span-3">
+    <div class="logo min-w-0 flex-1">
       <RouterLink
         to="/"
         class="flex items-center gap-1.5 no-underline text-inherit"
       >
-        <img :src="Logo" class="size-12" alt="logo" />
-        <div>
+        <img :src="Logo" class="size-12 shrink-0" alt="logo" />
+        <div class="min-w-0">
           <h1
             id="title"
             class="font-serif text-3xl lg:text-[2.1rem] text-foreground tracking-tight leading-none"
@@ -38,14 +38,17 @@ const { signout } = authStore;
           </h1>
           <p
             id="subtitle"
-            class="text-xs text-muted-foreground mt-1.2 tracking-wided"
+            class="text-[0.65rem] sm:text-xs text-muted-foreground mt-1 tracking-wide"
           >
             National Parks travel log.
           </p>
         </div>
       </RouterLink>
     </div>
-    <div class="signin col-span-1 flex justify-end items-center gap-2">
+    <nav
+      class="signin flex shrink-0 justify-end items-center gap-2 whitespace-nowrap"
+      aria-label="Account"
+    >
       <RouterLink
         v-if="isSignedIn && route.name !== 'fieldlog'"
         to="/fieldlog"
@@ -59,10 +62,10 @@ const { signout } = authStore;
         v-if="route.name == 'fieldlog'"
         to="/"
         class="text-xs font-medium cursor-pointer text-accent underline-offset-2 hover:underline transition-colors flex items-center gap-1 py-2"
-        ><img :src="BackArrow" class="size-4 text-accent" alt="back" />Search
+        ><img :src="BackArrow" class="size-4 text-accent" alt="" aria-hidden="true" />Search
         parks</RouterLink
       >
-      <span v-if="isSignedIn" class="text-accent">|</span>
+      <span v-if="isSignedIn" class="text-accent" aria-hidden="true">|</span>
       <span
         v-if="route.name == 'fieldlog'"
         class="text-xs font-medium text-foreground underline-offset-2 py-2"
@@ -70,6 +73,7 @@ const { signout } = authStore;
       >
       <button
         v-if="!isSignedIn && route.name !== 'fieldlog'"
+        type="button"
         class="text-xs cursor-pointer text-accent underline-offset-2 hover:underline transition-colors py-2"
         @click="openSignInModal"
       >
@@ -77,11 +81,12 @@ const { signout } = authStore;
       </button>
       <button
         v-else-if="route.name !== 'fieldlog'"
+        type="button"
         class="text-xs cursor-pointer text-accent underline-offset-2 hover:underline transition-colors py-2"
         @click="signout"
       >
         Sign Out
       </button>
-    </div>
+    </nav>
   </header>
 </template>

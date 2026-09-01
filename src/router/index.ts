@@ -3,11 +3,7 @@ import { useAuthStore } from "@/stores/auth";
 import SearchView from "@/views/SearchView.vue";
 import DetailView from "@/views/DetailView.vue";
 import FieldLogView from "@/views/FieldLogView.vue";
-import {
-  APP_TITLE,
-  APP_TITLE_FIELD_LOG,
-  APP_TITLE_SEARCH,
-} from "@/types/nps";
+import { APP_TITLE, APP_TITLE_FIELD_LOG, APP_TITLE_SEARCH } from "@/types/nps";
 
 declare module "vue-router" {
   interface RouteMeta {

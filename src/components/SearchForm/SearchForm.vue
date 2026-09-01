@@ -30,10 +30,10 @@ function onCategoryChange(newCategory: AvailableSearchCategories) {
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-start md:items-center">
-    <div class="w-full max-w-[472px] flex flex-col">
-      <form @submit.prevent="onSearch" class="mt-8 flex w-full">
-        <div class="relative flex-1 max-w-[400px]">
+  <div class="w-full px-3 sm:px-5">
+    <div class="mx-auto w-full max-w-[472px] flex flex-col">
+      <form @submit.prevent="onSearch" class="mt-8 flex w-full min-w-0">
+        <div class="relative min-w-0 flex-1">
           <label :for="searchInputId" class="sr-only">{{
             SEARCH_INPUT_LABEL
           }}</label>
@@ -52,7 +52,7 @@ function onCategoryChange(newCategory: AvailableSearchCategories) {
             autocorrect="off"
             spellcheck="false"
             :placeholder="SEARCH_INPUT_LABEL"
-            class="w-full border border-r-0 border-border bg-transparent pl-10 pr-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:border-foreground transition-colors"
+            class="w-full border border-r-0 border-border bg-transparent pl-10 pr-4 py-3 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus-visible:border-foreground transition-colors"
           />
         </div>
         <button

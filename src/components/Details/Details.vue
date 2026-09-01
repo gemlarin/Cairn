@@ -157,7 +157,7 @@ const handleSaveNote = async () => {
 </script>
 
 <template>
-  <div class="lg:flex-1 px-6 sm:px-10 lg:px-14 py-10 lg:py-16 lg:min-h-screen">
+  <div class="lg:flex-1 px-3 sm:px-10 lg:px-14 py-10 lg:py-16 lg:min-h-screen">
     <div class="max-w-md">
       <p
         class="text-[0.5625rem] uppercase tracking-[0.18em] text-muted-foreground mb-2.5"

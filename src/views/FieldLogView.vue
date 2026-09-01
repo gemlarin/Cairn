@@ -109,7 +109,7 @@ function onImageError(event: Event) {
   <div>
     <Header />
 
-    <div class="p-5 py-10 pb-24">
+    <div class="px-3 sm:px-5 py-10 pb-24">
       <div
         v-if="showInitialLoading"
         class="flex items-center justify-center gap-2"

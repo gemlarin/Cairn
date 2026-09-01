@@ -52,7 +52,7 @@ async function onSearch(
   <AuthModal v-if="authStore.isOpenSignInModal" @close="closeSignInModal" />
   <Header />
   <SearchForm @init-search="onSearch" />
-  <div class="p-5">
+  <div class="px-3 sm:px-5 py-5">
     <Results
       :error="searchStore.error"
       :searched="searchStore.searched"
