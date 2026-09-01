@@ -3,6 +3,10 @@
     {
       "source": "/nps/(.*)",
       "destination": "/api/nps/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
