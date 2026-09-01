@@ -80,7 +80,7 @@ watch(
     >
       {{ RESULTS_PROMPT }}
       <br />
-      <span class="text-xs opacity-80">
+      <span class="text-[0.75rem] opacity-80">
         {{ RESULTS_PROMPT_HINT }}
       </span>
     </p>
