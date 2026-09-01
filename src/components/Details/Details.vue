@@ -215,7 +215,7 @@ const handleSaveNote = async () => {
               v-if="!isSignedIn"
               type="button"
               @click="openSignInModal"
-              class="text-xs sm:text-[0.625rem] cursor-pointer text-accent underline-offset-2 hover:underline transition-colors py-2"
+              class="text-xs sm:text-[0.7rem] cursor-pointer text-accent underline-offset-2 hover:underline transition-colors py-2"
             >
               Sign in to save
             </button>
@@ -223,7 +223,7 @@ const handleSaveNote = async () => {
               v-else
               type="button"
               @click="signout"
-              class="text-xs sm:text-[0.625rem] text-accent cursor-pointer underline-offset-2 hover:underline transition-colors tracking-wide py-2"
+              class="text-xs sm:text-[0.7rem] text-accent cursor-pointer underline-offset-2 hover:underline transition-colors tracking-wide py-2"
             >
               Sign out
             </button>
@@ -232,13 +232,15 @@ const handleSaveNote = async () => {
         <div
           v-if="visitError"
           role="alert"
-          class="w-full text-xs sm:text-[0.625rem] text-red-500 text-left"
+          class="w-full text-xs sm:text-[0.7rem] text-red-500 text-left"
         >
           {{ visitError }}
         </div>
       </div>
       <div class="mt-7">
-        <p class="text-xs sm:text-[0.6875rem] text-foreground mb-7">
+        <p
+          class="text-xs sm:text-[0.7rem] text-foreground tracking-[0.015em] mb-7"
+        >
           {{ details.description }}
         </p>
         <div class="flex items-center gap-2 mb-3">
@@ -276,7 +278,10 @@ const handleSaveNote = async () => {
           {{ noteError }}
         </p>
         <div class="flex items-center justify-between mt-3">
-          <p class="text-xs sm:text-[0.625rem] text-muted-foreground" v-if="noteSavedOn">
+          <p
+            class="text-xs sm:text-[0.625rem] text-muted-foreground"
+            v-if="noteSavedOn"
+          >
             Last saved
             {{
               new Date(noteSavedOn).toLocaleDateString("en-US", {

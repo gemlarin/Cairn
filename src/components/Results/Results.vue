@@ -4,6 +4,7 @@ import type { AvailableSearchCategories, NpsResult } from "@/types/nps";
 import {
   RESULTS_PER_PAGE,
   RESULTS_FOR_LABEL,
+  RESULT_FOR_LABEL,
   RESULTS_EMPTY_PREFIX,
   RESULTS_PROMPT,
   RESULTS_PROMPT_HINT,
@@ -32,6 +33,10 @@ const pageResults = computed(() => {
   return props.results.slice(start, start + RESULTS_PER_PAGE);
 });
 
+const resultsForLabel = computed(() =>
+  props.results.length === 1 ? RESULT_FOR_LABEL : RESULTS_FOR_LABEL,
+);
+
 watch(
   () => props.results,
   () => {
@@ -55,9 +60,9 @@ watch(
     </div>
     <p
       v-if="results.length > 0 && !loading"
-      class="results text-xs sm:text-[11px] uppercase tracking-[0.16em] text-muted-foreground mb-6"
+      class="results text-xs sm:text-[11px] uppercase tracking-[0.05em] text-muted-foreground mb-6"
     >
-      {{ results.length }} {{ RESULTS_FOR_LABEL }}
+      {{ results.length }} {{ resultsForLabel }}
       <span class="text-muted-foreground font-bold">"{{ term }}".</span>
     </p>
     <p

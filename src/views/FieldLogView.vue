@@ -164,16 +164,14 @@ function onImageError(event: Event) {
             class="w-4 h-4 border-2 border-ring border-t-transparent rounded-full animate-spin"
             aria-hidden="true"
           />
-          <p class="text-xs sm:text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+          <p
+            class="text-xs sm:text-[11px] uppercase tracking-[0.16em] text-muted-foreground"
+          >
             {{ FIELD_LOG_LOADING }}
           </p>
         </div>
 
-        <p
-          v-if="fetchError"
-          role="alert"
-          class="text-sm text-accent mb-4"
-        >
+        <p v-if="fetchError" role="alert" class="text-sm text-accent mb-4">
           {{ fetchError }}
         </p>
 
@@ -218,7 +216,7 @@ function onImageError(event: Event) {
                   </p>
                   <p
                     v-if="formatSavedOn(item.savedOn)"
-                    class="text-xs sm:text-[11px] uppercase tracking-[0.12em] text-muted-foreground shrink-0"
+                    class="text-[10px] sm:text-[11px] uppercase tracking-[0.12em] text-muted-foreground shrink-0"
                   >
                     {{ formatSavedOn(item.savedOn) }}
                   </p>

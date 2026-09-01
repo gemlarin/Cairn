@@ -27,9 +27,7 @@ function syncNarrow(event?: MediaQueryList | MediaQueryListEvent) {
       ? event.matches
       : (mediaQuery?.matches ?? false);
   narrow.value = matches;
-  placeholder.value = matches
-    ? SEARCH_INPUT_LABEL_SHORT
-    : SEARCH_INPUT_LABEL;
+  placeholder.value = matches ? SEARCH_INPUT_LABEL_SHORT : SEARCH_INPUT_LABEL;
 }
 
 onMounted(() => {
@@ -63,7 +61,10 @@ function onCategoryChange(newCategory: AvailableSearchCategories) {
 <template>
   <div class="w-full px-3 sm:px-5">
     <div class="mx-auto w-full max-w-[472px] flex flex-col">
-      <form @submit.prevent="onSearch" class="mt-8 flex w-full min-w-0">
+      <form
+        @submit.prevent="onSearch"
+        class="mt-20 md:mt-30 flex w-full min-w-0"
+      >
         <div class="relative min-w-0 flex-1">
           <label :for="searchInputId" class="sr-only">{{
             SEARCH_INPUT_LABEL

@@ -10,6 +10,7 @@ import {
   RESULTS_PROMPT_HINT,
   RESULTS_EMPTY_PREFIX,
   RESULTS_FOR_LABEL,
+  RESULT_FOR_LABEL,
   RESULTS_LOADING,
   type NpsResult,
 } from "@/types/nps";
@@ -91,6 +92,16 @@ describe("Results", () => {
     });
     expect(wrapper.text()).toContain(`2 ${RESULTS_FOR_LABEL}`);
     expect(wrapper.findAllComponents({ name: "ParkCard" }).length).toBe(2);
+  });
+
+  it("uses singular RESULT FOR when there is one match", () => {
+    const wrapper = mountResults({
+      searched: true,
+      term: "yosemite",
+      results: [{ id: "1", fullName: "Yosemite National Park" }],
+    });
+    expect(wrapper.text()).toContain(`1 ${RESULT_FOR_LABEL}`);
+    expect(wrapper.text()).not.toContain(RESULTS_FOR_LABEL);
   });
 
   it("paginates when results exceed RESULTS_PER_PAGE", () => {

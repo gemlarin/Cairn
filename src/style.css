@@ -257,22 +257,20 @@
 /* Shared size for Category trigger + Limit control (beats base label/input rules). */
 .meta-control {
   font-family: inherit;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   line-height: 1.25;
-  text-transform: uppercase;
 }
 
 .meta-control label,
 .meta-control.input-meta,
 input.meta-control {
   font-family: inherit;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   line-height: 1.25;
-  text-transform: uppercase;
 }
 
 @media (max-width: 639px) {

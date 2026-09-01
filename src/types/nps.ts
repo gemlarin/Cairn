@@ -161,6 +161,7 @@ export const FIELD_LOG_VISITED_SUFFIX = "visited";
 export const FIELD_LOG_NO_NOTES = "No notes written.";
 
 export const RESULTS_FOR_LABEL = "RESULTS FOR";
+export const RESULT_FOR_LABEL = "RESULT FOR";
 export const RESULTS_EMPTY_PREFIX = "No results found for";
 export const RESULTS_PROMPT =
   "Search parks, tours, and things to do across the United States.";

@@ -21,7 +21,7 @@ const { signout } = authStore;
 </script>
 <template>
   <header
-    class="relative flex items-center justify-between gap-3 pt-10 pb-8 border-b border-border px-3 sm:px-5"
+    class="relative flex items-center justify-between gap-3 pt-10 pb-8 border-b border-border px-3 sm:px-5 bg-[#fff8ed]"
   >
     <div class="logo min-w-0 flex-1 pr-28 sm:pr-36">
       <RouterLink
