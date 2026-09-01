@@ -57,8 +57,12 @@ export default async function handler(request: Request): Promise<Response> {
     upstream.searchParams.append(key, value);
   });
 
+  // NPS multi-value id/parkCode filters need literal commas. URLSearchParams
+  // encodes them as %2C, which the API treats as a single id.
+  const upstreamUrl = upstream.toString().replace(/%2C/gi, ",");
+
   try {
-    const response = await fetch(upstream.toString(), {
+    const response = await fetch(upstreamUrl, {
       headers: {
         Accept: "application/json",
         "X-Api-Key": apiKey,

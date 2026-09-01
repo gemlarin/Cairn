@@ -36,3 +36,16 @@ describe('normalizeNpsId / buildIdParams', () => {
     expect(params.get('id')).toBe('77E0D7F0-1942-494A-ACE2-9004D2BDC59E')
   })
 })
+
+describe('toNpsQueryString', () => {
+  it('keeps literal commas in multi-id filters', async () => {
+    const { toNpsQueryString } = await import('@/api/nps')
+    const params = buildIdParams([
+      '77e0d7f0-1942-494a-ace2-9004d2bdc59e',
+      '6da17c86-088e-4b4d-b862-7c1bd5cf236b',
+    ])
+    const qs = toNpsQueryString(params)
+    expect(qs).toContain(',')
+    expect(qs).not.toMatch(/%2C/i)
+  })
+})

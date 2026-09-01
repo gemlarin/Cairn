@@ -18,11 +18,20 @@ const NPS_BASE = "/nps";
 
 const ALL_CATEGORIES = Object.values(AVAILABLE_SEARCH_CATEGORIES);
 
+/**
+ * NPS multi-value `id` / `parkCode` filters require literal commas.
+ * URLSearchParams encodes them as %2C, which the API treats as one id
+ * and only returns the first match — Field Log then shows "Unknown".
+ */
+export function toNpsQueryString(params: URLSearchParams): string {
+  return params.toString().replace(/%2C/gi, ",");
+}
+
 async function npsGet<T>(
   path: string,
   params: URLSearchParams,
 ): Promise<NpsListResponse<T>> {
-  const url = `${NPS_BASE}${path}?${params.toString()}`;
+  const url = `${NPS_BASE}${path}?${toNpsQueryString(params)}`;
   const res = await fetch(url);
 
   if (!res.ok) {
