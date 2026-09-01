@@ -59,7 +59,7 @@ const selectedCategoryLabel = computed(() => {
   <button
     id="category-btn"
     popovertarget="popover-content"
-    class="uppercase category-popover-button flex font-bold items-center text-muted-foreground cursor-pointer gap-x-0.5 pt-2 text-xs sm:text-[0.7rem] tracking-wider group hover:text-accent transition"
+    class="meta-control category-popover-button flex items-center text-muted-foreground cursor-pointer gap-x-0.5 pt-2 group hover:text-accent transition"
   >
     Category
     <svg

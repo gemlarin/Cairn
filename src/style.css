@@ -246,12 +246,62 @@
    * viewport stuck offset. Keep controls at least 16px on small screens.
    */
   @media (max-width: 639px) {
-    input,
+    input:not(.input-meta),
     textarea,
     select {
       font-size: 16px;
     }
   }
+}
+
+/* Shared size for Category trigger + Limit control (beats base label/input rules). */
+.meta-control {
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.meta-control label,
+.meta-control.input-meta,
+input.meta-control {
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+@media (max-width: 639px) {
+  .meta-control,
+  .meta-control label,
+  .meta-control.input-meta,
+  input.meta-control {
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+  }
+}
+
+.input-meta {
+  font: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  line-height: inherit;
+  font-family: inherit;
+}
+
+/* Beat base button { font-size } so nav size actually applies. */
+.header-nav,
+.header-nav a,
+.header-nav button,
+.header-nav span {
+  font-size: 13px;
+  line-height: 1.25;
 }
 
 /*

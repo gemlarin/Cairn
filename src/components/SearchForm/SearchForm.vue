@@ -99,15 +99,11 @@ function onCategoryChange(newCategory: AvailableSearchCategories) {
           @category-change="onCategoryChange"
           :default-category="category"
         />
-        <div class="flex justify-start items-center ml-5 pt-2">
-          <label
-            for="limit"
-            class="uppercase text-xs sm:text-[0.7rem] tracking-wider font-bold text-muted-foreground"
-            >Limit:</label
-          >
+        <div class="meta-control flex justify-start items-center ml-5 pt-2">
+          <label for="limit" class="text-muted-foreground">Limit:</label>
           <input
             type="number"
-            class="ml-1 text-base uppercase pl-1 w-12 border border-transparent text-accent font-bold bg-transparent placeholder:text-muted-foreground focus-visible:border-foreground transition-colors"
+            class="input-meta meta-control ml-1 w-10 border border-transparent text-accent bg-transparent p-0 focus-visible:border-foreground transition-colors"
             id="limit"
             name="limit"
             min="1"

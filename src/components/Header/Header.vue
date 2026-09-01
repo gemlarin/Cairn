@@ -32,13 +32,14 @@ const { signout } = authStore;
         <div class="min-w-0">
           <h1
             id="title"
-            class="font-serif text-[2.4rem] lg:text-[2.1rem] text-foreground tracking-tight leading-none"
+            class="font-serif text-[2.4rem] lg:text-[2.6rem] text-foreground tracking-tight leading-none"
           >
             Cairn
           </h1>
           <p
             id="subtitle"
-            class="text-xs sm:text-[0.65rem] text-muted-foreground mt-1 tracking-wide"
+            class="text-xs sm:text-[0.65rem] text-muted-foreground 
+             tracking-wide"
           >
             National Parks travel log.
           </p>
@@ -46,13 +47,13 @@ const { signout } = authStore;
       </RouterLink>
     </div>
     <nav
-      class="signin absolute top-[15px] right-3 sm:right-5 flex shrink-0 justify-end items-center gap-2 whitespace-nowrap"
+      class="header-nav absolute top-[15px] right-3 sm:right-5 flex shrink-0 justify-end items-center gap-2 whitespace-nowrap"
       aria-label="Account"
     >
       <RouterLink
         v-if="isSignedIn && route.name !== 'fieldlog'"
         to="/fieldlog"
-        class="text-xs font-medium cursor-pointer text-accent underline-offset-2 hover:underline transition-colors"
+        class="font-medium cursor-pointer text-accent underline-offset-2 hover:underline transition-colors"
         >Field Log
         <span class="text-muted-foreground"
           >({{ totalNumberOfVisits }})</span
@@ -61,7 +62,7 @@ const { signout } = authStore;
       <RouterLink
         v-if="route.name == 'fieldlog'"
         to="/"
-        class="text-xs font-medium cursor-pointer text-accent underline-offset-2 hover:underline transition-colors flex items-center gap-1"
+        class="font-medium cursor-pointer text-accent underline-offset-2 hover:underline transition-colors flex items-center gap-1"
         ><img
           :src="BackArrow"
           class="size-4 text-accent"
@@ -72,13 +73,13 @@ const { signout } = authStore;
       <span v-if="isSignedIn" class="text-accent" aria-hidden="true">|</span>
       <span
         v-if="route.name == 'fieldlog'"
-        class="text-xs font-medium text-foreground underline-offset-2"
+        class="font-medium text-foreground underline-offset-2"
         >Field Log</span
       >
       <button
         v-if="!isSignedIn && route.name !== 'fieldlog'"
         type="button"
-        class="text-xs cursor-pointer text-accent underline-offset-2 hover:underline transition-colors"
+        class="cursor-pointer text-accent underline-offset-2 hover:underline transition-colors"
         @click="openSignInModal"
       >
         Sign In
@@ -86,7 +87,7 @@ const { signout } = authStore;
       <button
         v-else-if="route.name !== 'fieldlog'"
         type="button"
-        class="text-xs cursor-pointer text-accent underline-offset-2 hover:underline transition-colors"
+        class="cursor-pointer text-accent underline-offset-2 hover:underline transition-colors"
         @click="signout"
       >
         Sign Out
