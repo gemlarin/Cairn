@@ -27,14 +27,21 @@ export default async function handler(request: Request): Promise<Response> {
   }
 
   const incoming = new URL(request.url);
-  // /api/nps/parks → parks ; /api/nps/thingstodo → thingstodo
+  // Rewrite may leave pathname as /nps/parks or /api/nps/parks depending on runtime.
   const resourcePath = incoming.pathname
-    .replace(/^\/api\/nps\/?/, "")
+    .replace(/^\/api\/nps\/?/i, "")
+    .replace(/^\/nps\/?/i, "")
     .replace(/\/+/g, "/")
     .replace(/^\//, "");
 
   if (!resourcePath || resourcePath.includes("..")) {
-    return Response.json({ error: "Invalid path" }, { status: 400 });
+    return Response.json(
+      {
+        error: "Invalid path",
+        pathname: incoming.pathname,
+      },
+      { status: 400 },
+    );
   }
 
   const upstream = new URL(`${NPS_API_BASE}/${resourcePath}`);
