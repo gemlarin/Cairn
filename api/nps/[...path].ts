@@ -4,6 +4,8 @@
  *
  * Client continues to call /nps/... ; vercel.json rewrites that to this function.
  */
+/// <reference types="node" />
+
 export const config = {
   runtime: "edge",
 };
