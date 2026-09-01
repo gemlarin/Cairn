@@ -54,7 +54,7 @@ These use the `VITE_` prefix on purpose — they are public client config. Do **
 - [x] Disable visit checkbox + notes when logged out; click opens sign-in modal
 - [x] Auth service (Supabase email sign-in / sign-up)
 - [x] Database service (visits table + RLS)
-- [ ] NPS caching (stay under ~1000 calls/day; key server-side only)
+- [x] NPS caching (CDN Cache-Control on the Vercel NPS proxy; key server-side only)
 - [x] Sign-in modal/drawer
 - [x] ParkCard marker when item has notes (visited badge already exists)
 - [x] Save/delete error handling — fail: keep note / keep Save enabled for retry; show error; mutate UI only on success
