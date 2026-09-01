@@ -32,7 +32,7 @@ const { signout } = authStore;
         <div class="min-w-0">
           <h1
             id="title"
-            class="font-serif text-3xl lg:text-[2.1rem] text-foreground tracking-tight leading-none"
+            class="font-serif text-[2.4rem] lg:text-[2.1rem] text-foreground tracking-tight leading-none"
           >
             Cairn
           </h1>

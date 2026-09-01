@@ -105,11 +105,11 @@ function onImageError() {
     </div>
     <div class="px-4 py-3.5">
       <p
-        class="text-xs sm:text-[11px] uppercase tracking-[0.16em] text-muted-foreground mb-1 font-sans"
+        class="text-xs sm:text-[11px] uppercase tracking-[0.1em] text-muted-foreground mb-1 font-sans"
       >
         {{ details.label }}&ensp;·&ensp;{{ details.states }}
       </p>
-      <h3 class="font-serif text-[1.2rem] text-foreground leading-snug">
+      <h3 class="font-serif text-[1.4rem] text-foreground leading-snug">
         {{ details.title }}
       </h3>
     </div>

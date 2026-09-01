@@ -58,7 +58,7 @@ watch(
       class="results text-xs sm:text-[11px] uppercase tracking-[0.16em] text-muted-foreground mb-6"
     >
       {{ results.length }} {{ RESULTS_FOR_LABEL }}
-      <span class="text-accent font-bold">"{{ term }}".</span>
+      <span class="text-muted-foreground font-bold">"{{ term }}".</span>
     </p>
     <p
       v-if="error"
