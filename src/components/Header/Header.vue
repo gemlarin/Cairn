@@ -38,7 +38,7 @@ const { signout } = authStore;
           </h1>
           <p
             id="subtitle"
-            class="text-[0.65rem] sm:text-xs text-muted-foreground mt-1 tracking-wide"
+            class="text-xs sm:text-[0.65rem] text-muted-foreground mt-1 tracking-wide"
           >
             National Parks travel log.
           </p>

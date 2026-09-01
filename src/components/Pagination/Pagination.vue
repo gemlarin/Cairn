@@ -43,7 +43,7 @@ function goNext() {
     </button>
 
     <p
-      class="text-[11px] uppercase tracking-[0.16em] text-muted-foreground tabular-nums"
+      class="text-xs sm:text-[11px] uppercase tracking-[0.16em] text-muted-foreground tabular-nums"
       aria-current="page"
     >
       Page {{ page }} of {{ totalPages }}

@@ -59,7 +59,7 @@ const selectedCategoryLabel = computed(() => {
   <button
     id="category-btn"
     popovertarget="popover-content"
-    class="uppercase category-popover-button flex font-bold items-center text-muted-foreground cursor-pointer gap-x-0.5 pt-2 text-[0.7rem] tracking-wider group hover:text-accent transition"
+    class="uppercase category-popover-button flex font-bold items-center text-muted-foreground cursor-pointer gap-x-0.5 pt-2 text-xs sm:text-[0.7rem] tracking-wider group hover:text-accent transition"
   >
     Category
     <svg
@@ -117,7 +117,7 @@ const selectedCategoryLabel = computed(() => {
     <h3 class="font-medium text-[1.1rem] text-gray-900 pr-6 mb-0.5 font-serif">
       Category Options
     </h3>
-    <p class="mb-4 text-[0.625rem] leading-4">
+    <p class="mb-4 text-xs sm:text-[0.625rem] leading-4">
       Select the category that you want to search for.
     </p>
     <fieldset>
@@ -140,7 +140,7 @@ const selectedCategoryLabel = computed(() => {
           />
           <label
             :for="category.id"
-            class="ml-2 text-[0.6875rem] font-medium font-sans"
+            class="ml-2 text-xs sm:text-[0.6875rem] font-medium font-sans"
             >{{ category.label }}</label
           >
         </div>

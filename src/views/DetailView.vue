@@ -127,7 +127,7 @@ function goBack() {
 
       <button
         type="button"
-        class="absolute top-5 left-5 flex items-center gap-2 cursor-pointer text-white text-[10px] uppercase tracking-widest bg-black/50 hover:bg-black/60 transition-colors px-3.5 py-2.5 min-h-[40px]"
+        class="absolute top-5 left-5 flex items-center gap-2 cursor-pointer text-white text-xs sm:text-[10px] uppercase tracking-widest bg-black/50 hover:bg-black/60 transition-colors px-3.5 py-2.5 min-h-[40px]"
         @click="goBack"
       >
         ← Back to search

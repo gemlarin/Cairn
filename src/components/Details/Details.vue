@@ -160,7 +160,7 @@ const handleSaveNote = async () => {
   <div class="lg:flex-1 px-3 sm:px-10 lg:px-14 py-10 lg:py-16 lg:min-h-screen">
     <div class="max-w-md">
       <p
-        class="text-[0.5625rem] uppercase tracking-[0.18em] text-muted-foreground mb-2.5"
+        class="text-xs sm:text-[0.5625rem] uppercase tracking-[0.18em] text-muted-foreground mb-2.5"
       >
         {{ details.label }}&ensp;·&ensp;{{ details.states }}
       </p>
@@ -215,7 +215,7 @@ const handleSaveNote = async () => {
               v-if="!isSignedIn"
               type="button"
               @click="openSignInModal"
-              class="text-[0.625rem] cursor-pointer text-accent underline-offset-2 hover:underline transition-colors py-2"
+              class="text-xs sm:text-[0.625rem] cursor-pointer text-accent underline-offset-2 hover:underline transition-colors py-2"
             >
               Sign in to save
             </button>
@@ -223,7 +223,7 @@ const handleSaveNote = async () => {
               v-else
               type="button"
               @click="signout"
-              class="text-[0.625rem] text-accent cursor-pointer underline-offset-2 hover:underline transition-colors tracking-wide py-2"
+              class="text-xs sm:text-[0.625rem] text-accent cursor-pointer underline-offset-2 hover:underline transition-colors tracking-wide py-2"
             >
               Sign out
             </button>
@@ -232,18 +232,18 @@ const handleSaveNote = async () => {
         <div
           v-if="visitError"
           role="alert"
-          class="w-full text-[0.625rem] text-red-500 text-left"
+          class="w-full text-xs sm:text-[0.625rem] text-red-500 text-left"
         >
           {{ visitError }}
         </div>
       </div>
       <div class="mt-7">
-        <p class="text-[0.6875rem] text-foreground mb-7">
+        <p class="text-xs sm:text-[0.6875rem] text-foreground mb-7">
           {{ details.description }}
         </p>
         <div class="flex items-center gap-2 mb-3">
           <p
-            class="text-[0.5625rem] uppercase tracking-[0.18em] text-muted-foreground"
+            class="text-xs sm:text-[0.5625rem] uppercase tracking-[0.18em] text-muted-foreground"
           >
             <span v-if="category !== 'people'">Visit Notes</span>
             <span v-else>People Notes</span>
@@ -257,7 +257,7 @@ const handleSaveNote = async () => {
             v-model="draft"
             placeholder="What did you see? What do you want to remember?"
             :rows="6"
-            class="w-full border border-border bg-transparent px-3.5 py-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:border-foreground transition-colors resize-none font-mono leading-relaxed"
+            class="w-full border border-border bg-transparent px-3.5 py-3 text-base text-foreground placeholder:text-muted-foreground focus-visible:border-foreground transition-colors resize-none font-mono leading-relaxed"
           />
           <div
             v-if="savingNote"
@@ -271,12 +271,12 @@ const handleSaveNote = async () => {
         <p
           v-if="noteError"
           role="alert"
-          class="mt-2 text-[0.625rem] text-red-500 text-left"
+          class="mt-2 text-xs sm:text-[0.625rem] text-red-500 text-left"
         >
           {{ noteError }}
         </p>
         <div class="flex items-center justify-between mt-3">
-          <p class="text-[0.625rem] text-muted-foreground" v-if="noteSavedOn">
+          <p class="text-xs sm:text-[0.625rem] text-muted-foreground" v-if="noteSavedOn">
             Last saved
             {{
               new Date(noteSavedOn).toLocaleDateString("en-US", {
@@ -295,7 +295,7 @@ const handleSaveNote = async () => {
                 ? 'bg-primary text-primary-foreground hover:opacity-90 cursor-pointer'
                 : 'bg-muted text-muted-foreground cursor-default'
             "
-            class="ml-auto px-5 py-2.5 text-[0.625rem] uppercase hover:scale-99 tracking-widest transition-all min-h-10"
+            class="ml-auto px-5 py-2.5 text-xs sm:text-[0.625rem] uppercase hover:scale-99 tracking-widest transition-all min-h-10"
           >
             {{ saveButtonLabel }}
           </button>
@@ -318,7 +318,7 @@ const handleSaveNote = async () => {
             aria-hidden="true"
           />
           <span
-            class="text-[0.625rem] text-muted-foreground peer-checked:text-accent"
+            class="text-xs sm:text-[0.625rem] text-muted-foreground peer-checked:text-accent"
           >
             Delete Note
           </span>
@@ -329,7 +329,7 @@ const handleSaveNote = async () => {
           :href="details.url"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[10px] uppercase tracking-widest text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+          class="text-xs sm:text-[10px] uppercase tracking-widest text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
         >
           Official NPS page →
         </a>

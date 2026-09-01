@@ -164,7 +164,7 @@ function onImageError(event: Event) {
             class="w-4 h-4 border-2 border-ring border-t-transparent rounded-full animate-spin"
             aria-hidden="true"
           />
-          <p class="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+          <p class="text-xs sm:text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
             {{ FIELD_LOG_LOADING }}
           </p>
         </div>
@@ -178,7 +178,7 @@ function onImageError(event: Event) {
         </p>
 
         <p
-          class="text-[11px] uppercase tracking-[0.16em] text-muted-foreground mb-8"
+          class="text-xs sm:text-[11px] uppercase tracking-[0.16em] text-muted-foreground mb-8"
         >
           {{ visitedItems.length }}
           {{
@@ -212,13 +212,13 @@ function onImageError(event: Event) {
               <div class="flex-1 min-w-0">
                 <div class="flex items-start justify-between gap-3 mb-1.5">
                   <p
-                    class="text-[11px] uppercase tracking-[0.15em] text-muted-foreground"
+                    class="text-xs sm:text-[11px] uppercase tracking-[0.15em] text-muted-foreground"
                   >
                     {{ itemLocation(item) }}
                   </p>
                   <p
                     v-if="formatSavedOn(item.savedOn)"
-                    class="text-[11px] uppercase tracking-[0.12em] text-muted-foreground shrink-0"
+                    class="text-xs sm:text-[11px] uppercase tracking-[0.12em] text-muted-foreground shrink-0"
                   >
                     {{ formatSavedOn(item.savedOn) }}
                   </p>

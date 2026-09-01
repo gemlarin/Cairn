@@ -207,7 +207,7 @@ onUnmounted(() => {
           <div v-if="mode === MODE_CREATE_ACCOUNT">
             <label
               for="auth-name"
-              class="block text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5"
+              class="block text-xs sm:text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5"
             >
               {{ DEFAULT_NAME_LABEL }}
             </label>
@@ -219,13 +219,13 @@ onUnmounted(() => {
               autocomplete="name"
               required
               :placeholder="DEFAULT_NAME"
-              class="w-full border border-border bg-transparent px-3 py-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:border-foreground transition-colors"
+              class="w-full border border-border bg-transparent px-3 py-3 text-base text-foreground placeholder:text-muted-foreground focus-visible:border-foreground transition-colors"
             />
           </div>
           <div>
             <label
               for="auth-email"
-              class="block text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5"
+              class="block text-xs sm:text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5"
             >
               {{ DEFAULT_EMAIL_LABEL }}
             </label>
@@ -237,13 +237,13 @@ onUnmounted(() => {
               autocomplete="email"
               required
               :placeholder="DEFAULT_EMAIL"
-              class="w-full border border-border bg-transparent px-3 py-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:border-foreground transition-colors"
+              class="w-full border border-border bg-transparent px-3 py-3 text-base text-foreground placeholder:text-muted-foreground focus-visible:border-foreground transition-colors"
             />
           </div>
           <div>
             <label
               for="auth-password"
-              class="block text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5"
+              class="block text-xs sm:text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5"
             >
               {{ DEFAULT_PASSWORD_LABEL }}
             </label>
@@ -257,7 +257,7 @@ onUnmounted(() => {
               "
               required
               :placeholder="DEFAULT_PASSWORD"
-              class="w-full border border-border bg-transparent px-3 py-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:border-foreground transition-colors"
+              class="w-full border border-border bg-transparent px-3 py-3 text-base text-foreground placeholder:text-muted-foreground focus-visible:border-foreground transition-colors"
             />
           </div>
 

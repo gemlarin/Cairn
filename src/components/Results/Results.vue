@@ -55,7 +55,7 @@ watch(
     </div>
     <p
       v-if="results.length > 0 && !loading"
-      class="results text-[11px] uppercase tracking-[0.16em] text-muted-foreground mb-6"
+      class="results text-xs sm:text-[11px] uppercase tracking-[0.16em] text-muted-foreground mb-6"
     >
       {{ results.length }} {{ RESULTS_FOR_LABEL }}
       <span class="text-accent font-bold">"{{ term }}".</span>

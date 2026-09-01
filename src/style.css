@@ -233,9 +233,56 @@
     line-height: 1.5;
   }
 
-  input {
+  input,
+  textarea,
+  select {
     font-size: var(--text-base);
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
+  }
+
+  /*
+   * iOS Safari zooms focused fields under 16px and often leaves the
+   * viewport stuck offset. Keep controls at least 16px on small screens.
+   */
+  @media (max-width: 639px) {
+    input,
+    textarea,
+    select {
+      font-size: 16px;
+    }
+  }
+}
+
+/*
+ * Microcopy is too small on phones. text-xs → 14px below sm;
+ * components use `text-xs sm:text-[…]` so desktop keeps the tighter size.
+ * Letter-spacing is tightened on mobile so the larger type doesn’t look sparse.
+ */
+@layer utilities {
+  @media (max-width: 639px) {
+    .text-xs {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+    }
+
+    .tracking-widest {
+      letter-spacing: 0.06em;
+    }
+
+    .tracking-wider {
+      letter-spacing: 0.04em;
+    }
+
+    .tracking-wide {
+      letter-spacing: 0.02em;
+    }
+
+    .tracking-\[0\.18em\],
+    .tracking-\[0\.16em\],
+    .tracking-\[0\.15em\],
+    .tracking-\[0\.12em\] {
+      letter-spacing: 0.05em;
+    }
   }
 }

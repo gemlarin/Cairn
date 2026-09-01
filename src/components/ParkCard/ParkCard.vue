@@ -105,7 +105,7 @@ function onImageError() {
     </div>
     <div class="px-4 py-3.5">
       <p
-        class="text-[11px] uppercase tracking-[0.16em] text-muted-foreground mb-1 font-sans"
+        class="text-xs sm:text-[11px] uppercase tracking-[0.16em] text-muted-foreground mb-1 font-sans"
       >
         {{ details.label }}&ensp;·&ensp;{{ details.states }}
       </p>
