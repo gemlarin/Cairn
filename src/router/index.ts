@@ -40,7 +40,7 @@ router.beforeEach((to) => {
     return { name: "search" }; // or return false to cancel
   }
 });
-router.afterEach((to) => {
+router.afterEach(() => {
   const authStore = useAuthStore();
   if (authStore.isOpenSignInModal) {
     authStore.closeSignInModal();

@@ -9,7 +9,7 @@ import BackArrow from "@/assets/back-arrow.svg";
 const route = useRoute();
 
 const authStore = useAuthStore();
-const { isSignedIn, user } = storeToRefs(authStore);
+const { isSignedIn } = storeToRefs(authStore);
 const visitsStore = useVisitsStore();
 const { totalNumberOfVisits } = storeToRefs(visitsStore);
 

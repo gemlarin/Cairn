@@ -3,7 +3,7 @@ import { useAuthStore } from "@/stores/auth";
 
 export const useSignin = () => {
   const authStore = useAuthStore();
-  return authStore.signin;
+  return authStore.signIn;
 };
 
 export const useSignout = () => {
