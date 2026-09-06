@@ -3,7 +3,7 @@ import Silhouette from "@/assets/silhoette.svg";
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full mt-auto shrink-0">
     <div class="flex justify-center px-3 sm:px-5">
       <img
         :src="Silhouette"

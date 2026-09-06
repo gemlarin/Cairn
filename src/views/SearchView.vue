@@ -50,11 +50,11 @@ async function onSearch(
 </script>
 
 <template>
-  <AuthModal v-if="authStore.isOpenSignInModal" @close="closeSignInModal" />
-  <div class="flex flex-1 flex-col min-h-dvh">
+  <div class="flex flex-1 flex-col min-h-[100dvh]">
+    <AuthModal v-if="authStore.isOpenSignInModal" @close="closeSignInModal" />
     <Header />
     <SearchForm @init-search="onSearch" />
-    <div class="px-3 sm:px-5 py-5 flex flex-col flex-1">
+    <div class="px-3 sm:px-5 py-5 flex flex-col flex-1 min-h-0">
       <Results
         :error="searchStore.error"
         :searched="searchStore.searched"
@@ -64,6 +64,6 @@ async function onSearch(
         :category="searchStore.category"
       />
     </div>
-    <Footer />
+    <Footer class="mt-auto shrink-0" />
   </div>
 </template>
