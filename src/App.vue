@@ -18,7 +18,7 @@ router.afterEach(async () => {
     id="main-content"
     ref="mainEl"
     tabindex="-1"
-    class="outline-none min-h-screen"
+    class="outline-none flex flex-1 flex-col min-h-dvh"
   >
     <RouterView />
   </main>

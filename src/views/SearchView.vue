@@ -51,7 +51,7 @@ async function onSearch(
 
 <template>
   <AuthModal v-if="authStore.isOpenSignInModal" @close="closeSignInModal" />
-  <div class="min-h-screen flex flex-col">
+  <div class="flex flex-1 flex-col min-h-dvh">
     <Header />
     <SearchForm @init-search="onSearch" />
     <div class="px-3 sm:px-5 py-5 flex flex-col flex-1">

@@ -129,14 +129,22 @@
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground m-0;
-  }
-
+  html,
+  body,
   #app {
     margin: 0;
     padding: 0;
     min-height: 100%;
+    min-height: 100dvh;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  #app {
+    display: flex;
+    flex-direction: column;
   }
 
   :focus {
@@ -257,7 +265,7 @@
 /* Shared size for Category trigger + Limit control (beats base label/input rules). */
 .meta-control {
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 900;
   letter-spacing: 0.05em;
   line-height: 1.25;
@@ -267,7 +275,7 @@
 .meta-control.input-meta,
 input.meta-control {
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 900;
   letter-spacing: 0.05em;
   line-height: 1.25;
@@ -281,7 +289,7 @@ input.meta-control {
   .meta-control label,
   .meta-control.input-meta,
   input.meta-control {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     letter-spacing: 0.04em;
   }
 }

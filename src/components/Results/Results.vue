@@ -81,7 +81,7 @@ watch(
     </p>
     <p
       v-if="!searched && !loading"
-      class="text-[0.8rem] text-muted-foreground text-center py-2 leading-relaxed max-w-80 m-auto"
+      class="text-[0.8rem] text-muted-foreground text-center py-2 leading-relaxed italic max-w-80 m-auto"
     >
       {{ RESULTS_PROMPT }}
       <br />
