@@ -257,8 +257,8 @@
 /* Shared size for Category trigger + Limit control (beats base label/input rules). */
 .meta-control {
   font-family: inherit;
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: 0.9rem;
+  font-weight: 900;
   letter-spacing: 0.05em;
   line-height: 1.25;
 }
@@ -267,10 +267,13 @@
 .meta-control.input-meta,
 input.meta-control {
   font-family: inherit;
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: 0.9rem;
+  font-weight: 900;
   letter-spacing: 0.05em;
   line-height: 1.25;
+}
+.meta-control label {
+  font-weight: 400;
 }
 
 @media (max-width: 639px) {
@@ -278,7 +281,7 @@ input.meta-control {
   .meta-control label,
   .meta-control.input-meta,
   input.meta-control {
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     letter-spacing: 0.04em;
   }
 }

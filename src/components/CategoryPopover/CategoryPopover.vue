@@ -61,7 +61,7 @@ const selectedCategoryLabel = computed(() => {
     popovertarget="popover-content"
     class="meta-control category-popover-button flex items-center text-muted-foreground cursor-pointer gap-x-0.5 pt-2 group hover:text-accent transition"
   >
-    Category
+    <span class="font-normal">Category</span>
     <svg
       xmlns="http://w3.org"
       height="20px"
@@ -74,7 +74,8 @@ const selectedCategoryLabel = computed(() => {
         d="M480-346.85 253.85-573 291-610.15l189 189 189-189L706.15-573 480-346.85Z"
       />
     </svg>
-    | <span class="text-accent pl-1">{{ selectedCategoryLabel }}</span>
+    <span class="font-normal">|</span>
+    <span class="text-accent pl-1">{{ selectedCategoryLabel }}</span>
   </button>
 
   <!-- 2. Smart Popover Content Card Container -->

@@ -2,6 +2,7 @@
 import AuthModal from "@/components/AuthModal/AuthModal.vue";
 import { searchNPS } from "@/api/nps";
 import Header from "@/components/Header/Header.vue";
+import Footer from "@/components/Footer/Footer.vue";
 import {
   DEFAULT_SEARCH_CATEGORY,
   type AvailableSearchCategories,
@@ -50,16 +51,19 @@ async function onSearch(
 
 <template>
   <AuthModal v-if="authStore.isOpenSignInModal" @close="closeSignInModal" />
-  <Header />
-  <SearchForm @init-search="onSearch" />
-  <div class="px-3 sm:px-5 py-5">
-    <Results
-      :error="searchStore.error"
-      :searched="searchStore.searched"
-      :term="searchStore.term"
-      :loading="searchStore.loading"
-      :results="searchStore.results"
-      :category="searchStore.category"
-    />
+  <div class="min-h-screen flex flex-col">
+    <Header />
+    <SearchForm @init-search="onSearch" />
+    <div class="px-3 sm:px-5 py-5 flex flex-col flex-1">
+      <Results
+        :error="searchStore.error"
+        :searched="searchStore.searched"
+        :term="searchStore.term"
+        :loading="searchStore.loading"
+        :results="searchStore.results"
+        :category="searchStore.category"
+      />
+    </div>
+    <Footer />
   </div>
 </template>

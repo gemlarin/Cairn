@@ -14,7 +14,12 @@ router.afterEach(async () => {
 
 <template>
   <a href="#main-content" class="skip-link">{{ SKIP_TO_CONTENT }}</a>
-  <main id="main-content" ref="mainEl" tabindex="-1" class="outline-none">
+  <main
+    id="main-content"
+    ref="mainEl"
+    tabindex="-1"
+    class="outline-none min-h-screen"
+  >
     <RouterView />
   </main>
 </template>

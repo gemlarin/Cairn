@@ -84,24 +84,26 @@ function onCategoryChange(newCategory: AvailableSearchCategories) {
             autocorrect="off"
             spellcheck="false"
             :placeholder="placeholder"
-            class="w-full border border-r-0 border-border bg-transparent pl-10 pr-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus-visible:border-foreground transition-colors"
+            class="w-full font-serif border border-r-0 border-border bg-transparent pl-10 pr-4 py-3 text-lg text-foreground placeholder:text-muted-foreground focus-visible:border-foreground transition-colors"
           />
         </div>
         <button
           type="submit"
           :disabled="!query"
-          class="border border-border border-l-0 px-5 min-w-[72px] bg-primary text-primary-foreground text-xs sm:text-[10px] uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-50 flex-shrink-0 cursor-pointer"
+          class="border border-border font-black border-l-0 px-5 min-w-[72px] bg-primary text-primary-foreground text-xs sm:text-[10px] uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-50 flex-shrink-0 cursor-pointer"
         >
           SEARCH
         </button>
       </form>
-      <div class="flex justify-start w-full">
+      <div class="flex justify-center mt-1 w-full">
         <CategoryPopover
           @category-change="onCategoryChange"
           :default-category="category"
         />
         <div class="meta-control flex justify-start items-center ml-5 pt-2">
-          <label for="limit" class="text-muted-foreground">Limit:</label>
+          <label for="limit" class="text-muted-foreground font-normal"
+            >Limit:</label
+          >
           <input
             type="number"
             class="input-meta meta-control ml-1 w-10 border border-transparent text-accent bg-transparent p-0 focus-visible:border-foreground transition-colors"

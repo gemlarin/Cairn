@@ -47,7 +47,7 @@ watch(
 <template>
   <div
     id="results-area"
-    class="mt-10 pb-20"
+    class="mt-2 pb-5"
     :aria-busy="loading"
     aria-live="polite"
   >
@@ -75,13 +75,13 @@ watch(
     </p>
     <p
       v-if="searched && !loading && results.length === 0 && !error"
-      class="text-sm text-muted-foreground text-center py-16"
+      class="text-sm text-muted-foreground text-center py-2"
     >
       {{ RESULTS_EMPTY_PREFIX }} "{{ term }}."
     </p>
     <p
       v-if="!searched && !loading"
-      class="text-sm text-muted-foreground text-center py-16 leading-relaxed"
+      class="text-[0.8rem] text-muted-foreground text-center py-2 leading-relaxed max-w-80 m-auto"
     >
       {{ RESULTS_PROMPT }}
       <br />

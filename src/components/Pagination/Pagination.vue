@@ -18,11 +18,13 @@ const canNext = computed(() => props.page < props.totalPages);
 function goPrev() {
   if (!canPrev.value) return;
   emit("update:page", props.page - 1);
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function goNext() {
   if (!canNext.value) return;
   emit("update:page", props.page + 1);
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 </script>
 
