@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue";
 import { RouterLink } from "vue-router";
 import missingImage from "@/assets/missing.png";
 import { useResultDetails } from "@/composables/useResultDetails";
+import { truncate } from "@/helpers";
 import {
   PARK_CARD_HAS_NOTES,
   PARK_CARD_VISITED,
@@ -107,7 +108,7 @@ function onImageError() {
       <p
         class="text-xs sm:text-[11px] uppercase tracking-[0.1em] text-muted-foreground mb-1 font-sans"
       >
-        {{ details.label }}&ensp;·&ensp;{{ details.states }}
+        {{ details.label }}&ensp;·&ensp;{{ truncate(details.states, 30) }}
       </p>
       <h3 class="font-serif text-[1.4rem] text-foreground leading-snug">
         {{ details.title }}

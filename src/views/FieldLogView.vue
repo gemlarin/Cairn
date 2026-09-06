@@ -7,6 +7,7 @@ import { storeToRefs } from "pinia";
 import { useVisitsStore, type VisitedItem } from "@/stores/visits";
 import { pickCardImage } from "@/helpers";
 import { getResultDetails } from "@/composables/useResultDetails";
+import { truncate } from "@/helpers";
 import {
   RESULTS_PER_PAGE,
   FIELD_LOG_LOADING,
@@ -212,7 +213,7 @@ function onImageError(event: Event) {
                   <p
                     class="text-xs sm:text-[11px] uppercase tracking-[0.15em] text-muted-foreground"
                   >
-                    {{ itemLocation(item) }}
+                    {{ truncate(itemLocation(item), 30) }}
                   </p>
                   <p
                     v-if="formatSavedOn(item.savedOn)"
