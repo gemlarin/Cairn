@@ -63,7 +63,7 @@ function onCategoryChange(newCategory: AvailableSearchCategories) {
     <div class="mx-auto w-full max-w-[472px] flex flex-col">
       <form
         @submit.prevent="onSearch"
-        class="mt-20 md:mt-30 flex w-full min-w-0"
+        class="mt-16 md:mt-20 flex w-full min-w-0"
       >
         <div class="relative min-w-0 flex-1">
           <label :for="searchInputId" class="sr-only">{{

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, nextTick } from "vue";
 import paginationLeft from "@/assets/pagination-left.svg";
 import paginationRight from "@/assets/pagination-right.svg";
 
@@ -15,16 +15,28 @@ const emit = defineEmits<{
 const canPrev = computed(() => props.page > 1);
 const canNext = computed(() => props.page < props.totalPages);
 
+/**
+ * iOS Safari often drops `behavior: "smooth"` when the results list reflows,
+ * then scrolls the still-focused pagination button back into view — so Next
+ * (clicked at the bottom) fails more often than Prev. Blur + instant scroll
+ * after the DOM update is reliable on iPhone.
+ */
+async function goToPage(next: number) {
+  emit("update:page", next);
+  const active = document.activeElement;
+  if (active instanceof HTMLElement) active.blur();
+  await nextTick();
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+}
+
 function goPrev() {
   if (!canPrev.value) return;
-  emit("update:page", props.page - 1);
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  void goToPage(props.page - 1);
 }
 
 function goNext() {
   if (!canNext.value) return;
-  emit("update:page", props.page + 1);
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  void goToPage(props.page + 1);
 }
 </script>
 

@@ -8,7 +8,7 @@ import Silhouette from "@/assets/silhoette.svg";
       <img
         :src="Silhouette"
         alt=""
-        class="footer-silhouette w-full max-w-[1000px] h-auto"
+        class="footer-silhouette w-full max-w-[1000px] max-h-[min(22vh,200px)] h-auto object-contain object-bottom"
         aria-hidden="true"
       />
     </div>

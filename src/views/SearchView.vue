@@ -50,7 +50,7 @@ async function onSearch(
 </script>
 
 <template>
-  <div class="flex flex-1 flex-col min-h-[100dvh]">
+  <div class="flex flex-1 flex-col">
     <AuthModal v-if="authStore.isOpenSignInModal" @close="closeSignInModal" />
     <Header />
     <SearchForm @init-search="onSearch" />
